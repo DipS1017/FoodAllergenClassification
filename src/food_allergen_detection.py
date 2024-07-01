@@ -1,85 +1,102 @@
 import os
-import csv
-import numpy as np
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras import layers, models, Input
-import tensorflow as tf
+import json
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras import layers, models, Input
+from tensorflow.keras.applications import ResNet50V2
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
+from tensorflow.keras.utils import Sequence
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import pandas as pd
+import numpy as np
+from PIL import Image
 
-def load_annotations(csv_path):
-    print(f"Loading annotations from {csv_path}")
-    annotations = []
-    with open(csv_path, mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            annotations.append(row)
-    print(f"Loaded {len(annotations)} annotations from {csv_path}")
-    return annotations
+# Define the correct class indices
+class_indices = {
+    'egg': 0, 'whole_egg_boiled': 1, 'milk': 2, 'icecream': 3, 'cheese': 4,
+    'milk_based_beverage': 5, 'chocolate': 6, 'non_milk_based_beverage': 7,
+    'cooked_meat': 8, 'raw_meat': 9, 'alcohol': 10, 'alcohol_glass': 11,
+    'spinach': 12, 'avocado': 13, 'eggplant': 14, 'blueberry': 15,
+    'blackberry': 16, 'strawberry': 17, 'pineapple': 18, 'capsicum': 19,
+    'mushroom': 20, 'dates': 21, 'almond': 22, 'pistachio': 23, 'tomato': 24,
+    'roti': 25, 'pasta': 26, 'bread': 27, 'bread_loaf': 28, 'pizza': 29
+}
 
-def load_and_preprocess_image(image_path, target_size=(150, 150)):
-    try:
-        img = load_img(image_path, target_size=target_size)
-        img = img_to_array(img)
-        img = img / 255.0
-        return img
-    except Exception as e:
-        print(f"Error loading image {image_path}: {e}")
-        return None
-
-class CustomDataGenerator(tf.keras.utils.Sequence):
-    def __init__(self, annotations, directory, batch_size, target_size=(150, 150), shuffle=True):
-        self.annotations = annotations
-        self.directory = directory
-        self.batch_size = batch_size
-        self.target_size = target_size
-        self.shuffle = shuffle
-        self.class_indices = self._get_class_indices()
-        self.n_classes = len(self.class_indices)
-        self.on_epoch_end()
-
-    def __len__(self):
-        return int(np.floor(len(self.annotations) / float(self.batch_size)))
-
-    def __getitem__(self, idx):
-        indexes = self.indexes[idx * self.batch_size:(idx + 1) * self.batch_size]
-        batch_annotations = [self.annotations[i] for i in indexes]
-
-        X, y = [], []
-        for ann in batch_annotations:
-            img_path = os.path.join(self.directory, ann['filename'])
-            img = load_and_preprocess_image(img_path, self.target_size)
-            if img is not None:
-                X.append(img)
-                y.append(self.class_indices[ann['class']])
-
-        return np.array(X), to_categorical(y, num_classes=self.n_classes)
-
-    def on_epoch_end(self):
-        self.indexes = np.arange(len(self.annotations))
-        if self.shuffle:
-            np.random.shuffle(self.indexes)
-
-    def _get_class_indices(self):
-        classes = sorted(list(set(ann['class'] for ann in self.annotations)))
-        return {cls: i for i, cls in enumerate(classes)}
-
-# Set up paths
-base_dir = os.path.join(os.path.dirname(__file__), '..', 'dataset')
-train_dir = os.path.join(base_dir, 'train')
-test_dir = os.path.join(base_dir, 'test')
-valid_dir = os.path.join(base_dir, 'valid')
+# Function to load annotations
+def load_annotations(annotation_file):
+    annotations = pd.read_csv(annotation_file)
+    annotations['class'] = annotations['class'].apply(lambda x: x.strip().lower().replace(' ', '_'))
+    return annotations.to_dict('records')
 
 # Load annotations
-train_annotations = load_annotations(os.path.join(train_dir, '_annotations.csv'))
-test_annotations = load_annotations(os.path.join(test_dir, '_annotations.csv'))
-valid_annotations = load_annotations(os.path.join(valid_dir, '_annotations.csv'))
+train_annotations = load_annotations('/dataset/food-allergen/train/_annotations.csv')
+test_annotations = load_annotations('/dataset/food-allergen/test/_annotations.csv')
+valid_annotations = load_annotations('/dataset/food-allergen/valid/_annotations.csv')
+
+# Custom Data Generator
+class CustomDataGenerator(Sequence):
+    def __init__(self, annotations, image_dir, batch_size, augment=False, class_indices=None):
+        self.annotations = annotations
+        self.image_dir = image_dir
+        self.batch_size = batch_size
+        self.augment = augment
+        self.class_indices = class_indices
+        self.n_classes = len(class_indices)
+
+        self.datagen = ImageDataGenerator(
+            rotation_range=20,
+            width_shift_range=0.2,
+            height_shift_range=0.2,
+            shear_range=0.15,  # Horizontal shear
+            zoom_range=0.2,
+            horizontal_flip=True,
+            fill_mode='nearest'
+        ) if self.augment else None
+
+    def __len__(self):
+        return int(np.ceil(len(self.annotations) / self.batch_size))
+
+    def __getitem__(self, index):
+        batch_annotations = self.annotations[index * self.batch_size:(index + 1) * self.batch_size]
+        images = []
+        labels = []
+        for annotation in batch_annotations:
+            image_path = os.path.join(self.image_dir, annotation['filename'])
+            image = Image.open(image_path).convert('RGB')
+            image = image.resize((416, 416))
+            image = np.array(image) / 255.0
+            images.append(image)
+            labels.append(self.class_indices[annotation['class']])
+        images = np.array(images)
+        labels = tf.keras.utils.to_categorical(labels, num_classes=self.n_classes)
+        
+        if self.augment:
+            images, labels = next(self.datagen.flow(images, labels, batch_size=self.batch_size))
+
+            # Additional rotations
+            for i in range(images.shape[0]):
+                if np.random.rand() < 0.25:
+                    images[i] = np.rot90(images[i], 1)
+                elif np.random.rand() < 0.25:
+                    images[i] = np.rot90(images[i], 2)
+                elif np.random.rand() < 0.25:
+                    images[i] = np.rot90(images[i], 3)
+                
+        return images, labels
+
+    def on_epoch_end(self):
+        np.random.shuffle(self.annotations)
+
+# Paths
+train_dir = '/kaggle/input/food-allergen/train'
+valid_dir = '/kaggle/input/food-allergen/valid'
+test_dir = '/kaggle/input/food-allergen/test'
 
 # Create custom data generators
-batch_size = 32
-train_generator = CustomDataGenerator(train_annotations, train_dir, batch_size)
-valid_generator = CustomDataGenerator(valid_annotations, valid_dir, batch_size)
-test_generator = CustomDataGenerator(test_annotations, test_dir, batch_size)
+batch_size = 16  # Reduced batch size
+train_generator = CustomDataGenerator(train_annotations, train_dir, batch_size, augment=True, class_indices=class_indices)
+valid_generator = CustomDataGenerator(valid_annotations, valid_dir, batch_size, class_indices=class_indices)
+test_generator = CustomDataGenerator(test_annotations, test_dir, batch_size, class_indices=class_indices)
 
 # Print some information
 print(f"Number of training samples: {len(train_generator.annotations)}")
@@ -88,37 +105,52 @@ print(f"Number of test samples: {len(test_generator.annotations)}")
 print(f"Number of classes: {train_generator.n_classes}")
 print(f"Class indices: {train_generator.class_indices}")
 
-# Define the model
-inputs = Input(shape=(150, 150, 3))
-x = layers.Conv2D(32, (3, 3), activation='relu')(inputs)
-x = layers.MaxPooling2D((2, 2))(x)
-x = layers.Conv2D(64, (3, 3), activation='relu')(x)
-x = layers.MaxPooling2D((2, 2))(x)
-x = layers.Conv2D(128, (3, 3), activation='relu')(x)
-x = layers.MaxPooling2D((2, 2))(x)
-x = layers.Flatten()(x)
+# Define the model using ResNet50V2 architecture without pre-trained weights
+base_model = ResNet50V2(weights=None, include_top=False, input_shape=(416, 416, 3))
+
+# Since we're training from scratch, we can make the entire model trainable
+base_model.trainable = True
+
+inputs = Input(shape=(416, 416, 3))
+x = base_model(inputs)
+x = layers.GlobalAveragePooling2D()(x)
 x = layers.Dense(128, activation='relu')(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.5)(x)
 outputs = layers.Dense(train_generator.n_classes, activation='softmax')(x)
 
 model = models.Model(inputs=inputs, outputs=outputs)
 
+# Use a lower learning rate since we're training from scratch
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+
 # Compile the model
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Add callbacks
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.00001)
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+model_checkpoint = ModelCheckpoint('/kaggle/working/food_allergen_model_checkpoint.keras', save_best_only=True)
 
 # Train the model
 try:
     history = model.fit(
         train_generator,
-        epochs=10,
-        validation_data=valid_generator
+        epochs=100,  # Increase max epochs, but use early stopping
+        validation_data=valid_generator,
+        callbacks=[reduce_lr, early_stopping, model_checkpoint]
     )
 
     # Evaluate the model
     test_loss, test_acc = model.evaluate(test_generator)
     print(f"Test accuracy: {test_acc}")
 
-    # Optional: Save the model
-    model.save('food_allergen_model.h5')
+    # Save the final model
+    model.save('/kaggle/working/food_allergen_model_final.keras')
+
+    # Save the class indices
+    with open('/kaggle/working/class_indices.json', 'w') as f:
+        json.dump(train_generator.class_indices, f)
 
     # Plot training history
     plt.figure(figsize=(12, 4))
