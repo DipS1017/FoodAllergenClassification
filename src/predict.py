@@ -7,7 +7,7 @@ from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 
 # Load the trained model
-model_path = 'food_allergen_model_final.keras'
+model_path = 'final_model_after_additional_training.keras'
 model = load_model(model_path)
 
 # Load the class indices
@@ -32,7 +32,7 @@ def predict_image(model, img_array):
     return predicted_class_label, predictions[0]
 
 # Path to the input image
-img_path = '12.jpg'
+img_path = 'images3.jpeg'
 
 # Preprocess the image
 img_array = preprocess_image(img_path)
