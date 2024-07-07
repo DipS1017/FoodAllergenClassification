@@ -1,3 +1,4 @@
+
 import os
 import json
 import matplotlib.pyplot as plt
@@ -29,9 +30,9 @@ def load_annotations(annotation_file):
     return annotations.to_dict('records')
 
 # Load annotations
-train_annotations = load_annotations('/dataset/food-allergen/train/_annotations.csv')
-test_annotations = load_annotations('/dataset/food-allergen/test/_annotations.csv')
-valid_annotations = load_annotations('/dataset/food-allergen/valid/_annotations.csv')
+train_annotations = load_annotations('../dataset/train/_annotations.csv')
+test_annotations = load_annotations('../dataset/test/_annotations.csv')
+valid_annotations = load_annotations('../dataset/valid/_annotations.csv')
 
 # Custom Data Generator
 class CustomDataGenerator(Sequence):
@@ -71,7 +72,8 @@ class CustomDataGenerator(Sequence):
         labels = tf.keras.utils.to_categorical(labels, num_classes=self.n_classes)
         
         if self.augment:
-            images, labels = next(self.datagen.flow(images, labels, batch_size=self.batch_size))
+            augmented_data = self.datagen.flow(images, labels, batch_size=self.batch_size)
+            images, labels = next(augmented_data)
 
             # Additional rotations
             for i in range(images.shape[0]):
@@ -88,12 +90,12 @@ class CustomDataGenerator(Sequence):
         np.random.shuffle(self.annotations)
 
 # Paths
-train_dir = '/kaggle/input/food-allergen/train'
-valid_dir = '/kaggle/input/food-allergen/valid'
-test_dir = '/kaggle/input/food-allergen/test'
+train_dir = '../dataset/train'
+valid_dir = '../dataset/valid'
+test_dir = '../dataset/test'
 
 # Create custom data generators
-batch_size = 16  # Reduced batch size
+batch_size = 32  # Increased batch size to manage memory
 train_generator = CustomDataGenerator(train_annotations, train_dir, batch_size, augment=True, class_indices=class_indices)
 valid_generator = CustomDataGenerator(valid_annotations, valid_dir, batch_size, class_indices=class_indices)
 test_generator = CustomDataGenerator(test_annotations, test_dir, batch_size, class_indices=class_indices)
@@ -105,8 +107,8 @@ print(f"Number of test samples: {len(test_generator.annotations)}")
 print(f"Number of classes: {train_generator.n_classes}")
 print(f"Class indices: {train_generator.class_indices}")
 
-# Define the model using ResNet50V2 architecture without pre-trained weights
-base_model = ResNet50V2(weights=None, include_top=False, input_shape=(416, 416, 3))
+# Define the model using ResNet50V2 architecture with pre-trained weights
+base_model = ResNet50V2(weights='imagenet', include_top=False, input_shape=(416, 416, 3))
 
 # Since we're training from scratch, we can make the entire model trainable
 base_model.trainable = True
@@ -130,13 +132,16 @@ model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['ac
 # Add callbacks
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.00001)
 early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
-model_checkpoint = ModelCheckpoint('/kaggle/working/food_allergen_model_checkpoint.keras', save_best_only=True)
+model_checkpoint = ModelCheckpoint('/kaggle/working/food_allergen_model_epoch_{epoch:02d}_val_acc_{val_accuracy:.2f}.keras', 
+                                   save_best_only=True, 
+                                   monitor='val_accuracy', 
+                                   mode='max')
 
 # Train the model
 try:
     history = model.fit(
         train_generator,
-        epochs=100,  # Increase max epochs, but use early stopping
+        epochs=20,  # Keep max epochs to 20
         validation_data=valid_generator,
         callbacks=[reduce_lr, early_stopping, model_checkpoint]
     )
@@ -146,10 +151,10 @@ try:
     print(f"Test accuracy: {test_acc}")
 
     # Save the final model
-    model.save('/kaggle/working/food_allergen_model_final.keras')
+    model.save('final_model_after_additional_training.keras')
 
     # Save the class indices
-    with open('/kaggle/working/class_indices.json', 'w') as f:
+    with open('class_indices.json', 'w') as f:
         json.dump(train_generator.class_indices, f)
 
     # Plot training history
