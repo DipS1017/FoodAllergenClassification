@@ -1,25 +1,28 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Allergen Detection</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <h1>Food Allergen Detection</h1>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <button type="submit">Upload</button>
-    </form>
-    {% if filename %}
-        <h2>Uploaded Image:</h2>
-        <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image">
-        <h2>Prediction:</h2>
-        <p><strong>Class:</strong> {{ predicted_class_label }}</p>
-        <p><strong>Confidence:</strong> {{ predictions }}</p>
-    {% endif %}
-</body>
-</html>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Allergen Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+
+<body>
+  <h1>Food Allergen Detection</h1>
+  <form action="/" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <button type="submit">Upload</button>
+  </form>
+  {% if filename %}
+  <h2>Uploaded Image:</h2>
+  <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image" />
+  <h2>Prediction:</h2>
+  <p><strong>Class:</strong> {{ predicted_class_label }}</p>
+  <p><strong>Allergen:</strong> {{ allergen }}</p>
+  <p><strong>Description:</strong> {{ description }}</p>
+  <p><strong>Confidence:</strong> {{ predictions }}</p>
+   {% endif %}
+</body>
+
+</html>

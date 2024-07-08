@@ -1,11 +1,13 @@
-import os
 import json
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from flask import Flask, request, render_template, redirect, url_for
 from tensorflow.keras.preprocessing import image
-import matplotlib.pyplot as plt
+
+from flask import Flask, redirect, render_template, request, url_for
 
 # Load the trained model
 model_path = 'final_model_after_additional_training.keras'
@@ -18,6 +20,11 @@ with open(class_indices_path, 'r') as f:
 
 # Reverse the class indices dictionary to map index to class label
 indices_class = {v: k for k, v in class_indices.items()}
+
+# Load the allergen information
+allergen_info_path = 'class_allergen_map.json'
+with open(allergen_info_path, 'r') as f:
+    allergen_info = json.load(f)
 
 def preprocess_image(img_path):
     img = image.load_img(img_path, target_size=(416, 416))
@@ -49,20 +56,29 @@ def index():
         if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
+ 
 
+            # Preprocess the image and make prediction
             img_array = preprocess_image(file_path)
             predicted_class_label, predictions = predict_image(model, img_array)
-
-            return render_template('index.html', 
-                                   filename=file.filename,
+            allergen = allergen_info[predicted_class_label]['allergen']
+            description = allergen_info[predicted_class_label]['description']
+            
+            # Convert confidence to percentage
+            predictions_percentage = [f"{p * 100:.2f}%" for p in predictions]
+            
+            return render_template('index.html', filename=file.filename, 
                                    predicted_class_label=predicted_class_label,
-                                   predictions=predictions)
+                                   allergen=allergen, 
+                                   description=description,
+                                   predictions=predictions_percentage)
+
     return render_template('index.html')
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
 
