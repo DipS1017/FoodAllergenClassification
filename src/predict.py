@@ -1,3 +1,4 @@
+
 import json
 import os
 
@@ -37,7 +38,14 @@ def predict_image(model, img_array):
     predictions = model.predict(img_array)
     predicted_class_index = np.argmax(predictions, axis=1)[0]
     predicted_class_label = indices_class[predicted_class_index]
-    return predicted_class_label, predictions[0]
+    
+    # Create a list of tuples with class names and their respective confidence percentages
+    predictions_with_labels = [
+        (indices_class[i], f"{pred * 100:.2f}%") 
+        for i, pred in enumerate(predictions[0])
+    ]
+    
+    return predicted_class_label, predictions_with_labels
 
 
 app = Flask(__name__)
@@ -56,22 +64,18 @@ def index():
         if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
- 
 
             # Preprocess the image and make prediction
             img_array = preprocess_image(file_path)
-            predicted_class_label, predictions = predict_image(model, img_array)
+            predicted_class_label, predictions_with_labels = predict_image(model, img_array)
             allergen = allergen_info[predicted_class_label]['allergen']
             description = allergen_info[predicted_class_label]['description']
-            
-            # Convert confidence to percentage
-            predictions_percentage = [f"{p * 100:.2f}%" for p in predictions]
             
             return render_template('index.html', filename=file.filename, 
                                    predicted_class_label=predicted_class_label,
                                    allergen=allergen, 
                                    description=description,
-                                   predictions=predictions_percentage)
+                                   predictions_with_labels=predictions_with_labels)
 
     return render_template('index.html')
 
