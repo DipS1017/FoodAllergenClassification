@@ -3,6 +3,7 @@ import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from flask import Flask, request, render_template, redirect, url_for
 from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 
@@ -31,21 +32,37 @@ def predict_image(model, img_array):
     predicted_class_label = indices_class[predicted_class_index]
     return predicted_class_label, predictions[0]
 
-# Path to the input image
-img_path = 'images3.jpeg'
 
-# Preprocess the image
-img_array = preprocess_image(img_path)
+app = Flask(__name__)
 
-# Make prediction
-predicted_class_label, predictions = predict_image(model, img_array)
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Print the results
-print(f"Predicted Class: {predicted_class_label}")
-print(f"Prediction Confidence: {predictions}")
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            return redirect(request.url)
+        if file:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
 
-# Plot the image and the prediction
-plt.imshow(image.load_img(img_path))
-plt.title(f"Predicted: {predicted_class_label}")
-plt.axis('off')
-plt.show()
+            img_array = preprocess_image(file_path)
+            predicted_class_label, predictions = predict_image(model, img_array)
+
+            return render_template('index.html', 
+                                   filename=file.filename,
+                                   predicted_class_label=predicted_class_label,
+                                   predictions=predictions)
+    return render_template('index.html')
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
