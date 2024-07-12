@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Food Allergen Detection - Upload Image</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+    {% if filename %}
+    <div class="main--container">
+        <div class="left-col">
+            <h2>Uploaded Image:</h2>
+            <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image">
+
+            <h2>Prediction:</h2>
+            <p>Class: {{ predicted_class_label }}</p>
+            <p>Allergen: {{ allergen }}</p>
+            <p>Description: {{ description }}</p>
+        </div>
+        <div class="right-col">
+            <h3>Confidence Levels:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for label, confidence in predictions_with_labels %}
+                        <tr>
+                            <td>{{ label }}</td>
+                            <td>{{ confidence }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    <a href="/">Go Back</a>
+</body>
+</html>
+

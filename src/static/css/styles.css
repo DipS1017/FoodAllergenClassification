@@ -38,7 +38,11 @@ img {
     padding: 5px;
     background-color: #fff;
 }
+.left-col{
+width:400px;
+overflow:hidden;
 
+}
 p {
     font-size: 1.2em;
     color: #555;
