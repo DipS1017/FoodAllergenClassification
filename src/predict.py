@@ -3,6 +3,7 @@ import json
 import os
 import base64
 from io import BytesIO
+import uuid
 
 import numpy as np
 import tensorflow as tf
@@ -55,7 +56,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return redirect(url_for('upload'))
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -82,6 +83,24 @@ def upload():
                                    description=description,
                                    predictions_with_labels=predictions_with_labels)
 
+    elif request.method == 'GET' and 'filename' in request.args:
+        filename = request.args['filename']
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        if os.path.exists(file_path):
+            # Preprocess the image and make prediction
+            img = Image.open(file_path)
+            img_array = preprocess_image(img)
+            predicted_class_label, predictions_with_labels = predict_image(model, img_array)
+            allergen = allergen_info[predicted_class_label]['allergen']
+            description = allergen_info[predicted_class_label]['description']
+            
+            return render_template('upload.html', filename=filename, 
+                                   predicted_class_label=predicted_class_label,
+                                   allergen=allergen, 
+                                   description=description,
+                                   predictions_with_labels=predictions_with_labels)
+
     return render_template('upload.html')
 
 @app.route('/uploads/<filename>')
@@ -101,11 +120,27 @@ def predict():
     img = Image.open(BytesIO(image_data))
     img_array = preprocess_image(img)
     predicted_class_label, predictions_with_labels = predict_image(model, img_array)
+    allergen = allergen_info[predicted_class_label]['allergen']
+    description = allergen_info[predicted_class_label]['description']
     response = {
         'prediction': predicted_class_label,
+        'allergen': allergen,
+        'description': description,
         'confidence': predictions_with_labels
     }
     return jsonify(response)
+
+@app.route('/capture', methods=['POST'])
+def capture():
+    data = request.get_json()
+    image_data = data['image']
+    image_data = image_data.split(',')[1]
+    image_data = base64.b64decode(image_data)
+    img = Image.open(BytesIO(image_data))
+    unique_filename = f"captured_image_{uuid.uuid4().hex}.jpg"
+    img_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+    img.save(img_path)
+    return jsonify({'url': url_for('upload', filename=unique_filename)})
 
 if __name__ == '__main__':
     app.run(debug=True)

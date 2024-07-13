@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Prediction Result</title>
+    <title>Upload Image</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -17,7 +17,6 @@
         <div class="left-col">
             <h2>Uploaded Image:</h2>
             <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image">
-
             <h2>Prediction:</h2>
             <p>Class: {{ predicted_class_label }}</p>
             <p>Allergen: {{ allergen }}</p>
@@ -34,17 +33,17 @@
                 </thead>
                 <tbody>
                     {% for label, confidence in predictions_with_labels %}
-                        <tr>
-                            <td>{{ label }}</td>
-                            <td>{{ confidence }}</td>
-                        </tr>
+                    <tr>
+                        <td>{{ label }}</td>
+                        <td>{{ confidence }}</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
     {% endif %}
-    <a href="/">Go Back</a>
+    <a href="/camera">Use Real-Time Camera</a>
 </body>
 </html>
 
