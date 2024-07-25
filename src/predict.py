@@ -111,6 +111,7 @@ def uploaded_file(filename):
 def camera():
     return render_template('camera.html')
 
+
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
@@ -120,16 +121,28 @@ def predict():
     img = Image.open(BytesIO(image_data))
     img_array = preprocess_image(img)
     predicted_class_label, predictions_with_labels = predict_image(model, img_array)
-    allergen = allergen_info[predicted_class_label]['allergen']
-    description = allergen_info[predicted_class_label]['description']
-    response = {
-        'prediction': predicted_class_label,
-        'allergen': allergen,
-        'description': description,
-        'confidence': predictions_with_labels
-    }
+    
+    # Calculate the highest confidence percentage
+    max_confidence = max([float(conf.strip('%')) for _, conf in predictions_with_labels])
+    
+    if max_confidence < 45:
+        response = {
+            'prediction': 'Food not detected',
+            'allergen': '',
+            'description': '',
+            'confidence': predictions_with_labels
+        }
+    else:
+        allergen = allergen_info[predicted_class_label]['allergen']
+        description = allergen_info[predicted_class_label]['description']
+        response = {
+            'prediction': predicted_class_label,
+            'allergen': allergen,
+            'description': description,
+            'confidence': predictions_with_labels
+        }
+    
     return jsonify(response)
-
 @app.route('/capture', methods=['POST'])
 def capture():
     data = request.get_json()
