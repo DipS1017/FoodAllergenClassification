@@ -3,13 +3,11 @@ import os
 import json
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow.keras import layers, models, Input
-from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
-from tensorflow.keras.utils import Sequence
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import pandas as pd
 import numpy as np
 from PIL import Image
+from tensorflow.keras.utils import Sequence  # Add this import
+from tensorflow.keras.preprocessing.image import ImageDataGenerator  # Add this import
 
 # Define the correct class indices
 class_indices = {
@@ -33,7 +31,7 @@ train_annotations = load_annotations('../dataset/train/_annotations.csv')
 test_annotations = load_annotations('../dataset/test/_annotations.csv')
 valid_annotations = load_annotations('../dataset/valid/_annotations.csv')
 
-# Custom Data Generator
+# Custom data generator
 class CustomDataGenerator(Sequence):
     def __init__(self, annotations, image_dir, batch_size, augment=False, class_indices=None):
         self.annotations = annotations
@@ -42,7 +40,6 @@ class CustomDataGenerator(Sequence):
         self.augment = augment
         self.class_indices = class_indices
         self.n_classes = len(class_indices)
-
         self.datagen = ImageDataGenerator(
             rotation_range=20,
             width_shift_range=0.2,
@@ -107,95 +104,124 @@ print(f"Number of classes: {train_generator.n_classes}")
 print(f"Class indices: {train_generator.class_indices}")
 
 # Define the custom CNN model
-inputs = Input(shape=(416, 416, 3))
-
-# First convolutional block
-x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
-x = layers.BatchNormalization()(x)
-x = layers.MaxPooling2D((2, 2))(x)
-
-# Second convolutional block
-x = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-x = layers.BatchNormalization()(x)
-x = layers.MaxPooling2D((2, 2))(x)
-
-# Third convolutional block
-x = layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-x = layers.BatchNormalization()(x)
-x = layers.MaxPooling2D((2, 2))(x)
-
-# Fourth convolutional block
-x = layers.Conv2D(256, (3, 3), activation='relu', padding='same')(x)
-x = layers.BatchNormalization()(x)
-x = layers.MaxPooling2D((2, 2))(x)
-
-# Fifth convolutional block
-x = layers.Conv2D(512, (3, 3), activation='relu', padding='same')(x)
-x = layers.BatchNormalization()(x)
-x = layers.MaxPooling2D((2, 2))(x)
-
-# Global average pooling and dense layers
-x = layers.GlobalAveragePooling2D()(x)
-x = layers.Dense(128, activation='relu')(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.5)(x)
-outputs = layers.Dense(train_generator.n_classes, activation='softmax')(x)
+class CustomCNN(tf.keras.Model):
+    def __init__(self, num_classes):
+        super(CustomCNN, self).__init__()
+        self.conv1 = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')
+        self.bn1 = tf.keras.layers.BatchNormalization()
+        self.pool1 = tf.keras.layers.MaxPooling2D((2, 2))
+        
+        self.conv2 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')
+        self.bn2 = tf.keras.layers.BatchNormalization()
+        self.pool2 = tf.keras.layers.MaxPooling2D((2, 2))
+        
+        self.conv3 = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')
+        self.bn3 = tf.keras.layers.BatchNormalization()
+        self.pool3 = tf.keras.layers.MaxPooling2D((2, 2))
+        
+        self.conv4 = tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same')
+        self.bn4 = tf.keras.layers.BatchNormalization()
+        self.pool4 = tf.keras.layers.MaxPooling2D((2, 2))
+        
+        self.conv5 = tf.keras.layers.Conv2D(512, (3, 3), activation='relu', padding='same')
+        self.bn5 = tf.keras.layers.BatchNormalization()
+        self.pool5 = tf.keras.layers.MaxPooling2D((2, 2))
+        
+        self.gap = tf.keras.layers.GlobalAveragePooling2D()
+        self.dense1 = tf.keras.layers.Dense(128, activation='relu')
+        self.bn6 = tf.keras.layers.BatchNormalization()
+        self.dropout = tf.keras.layers.Dropout(0.5)
+        self.outputs = tf.keras.layers.Dense(num_classes, activation='softmax')
+    
+    def call(self, inputs, training=False):
+        x = self.conv1(inputs)
+        x = self.bn1(x, training=training)
+        x = self.pool1(x)
+        
+        x = self.conv2(x)
+        x = self.bn2(x, training=training)
+        x = self.pool2(x)
+        
+        x = self.conv3(x)
+        x = self.bn3(x, training=training)
+        x = self.pool3(x)
+        
+        x = self.conv4(x)
+        x = self.bn4(x, training=training)
+        x = self.pool4(x)
+        
+        x = self.conv5(x)
+        x = self.bn5(x, training=training)
+        x = self.pool5(x)
+        
+        x = self.gap(x)
+        x = self.dense1(x)
+        x = self.bn6(x, training=training)
+        x = self.dropout(x, training=training)
+        return self.outputs(x)
 
 # Create the model
-model = models.Model(inputs=inputs, outputs=outputs)
+model = CustomCNN(num_classes=train_generator.n_classes)
 
 # Compile the model
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Add callbacks
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.00001)
-early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
-model_checkpoint = ModelCheckpoint('food_allergen_model_epoch_{epoch:02d}_val_acc_{val_accuracy:.2f}.keras', 
+reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.00001)
+early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+model_checkpoint = tf.keras.callbacks.ModelCheckpoint('food_allergen_model_epoch_{epoch:02d}_val_acc_{val_accuracy:.2f}.keras', 
                                    save_best_only=True, 
                                    monitor='val_accuracy', 
                                    mode='max')
 
-# Train the model
-try:
-    history = model.fit(
-        train_generator,
-        epochs=20,  # Keep max epochs to 20
-        validation_data=valid_generator,
-        callbacks=[reduce_lr, early_stopping, model_checkpoint]
-    )
+# Custom training loop
+@tf.function
+def train_step(images, labels):
+    with tf.GradientTape() as tape:
+        predictions = model(images, training=True)
+        loss = tf.keras.losses.categorical_crossentropy(labels, predictions)
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    return loss, predictions
 
-    # Evaluate the model
-    test_loss, test_acc = model.evaluate(test_generator)
-    print(f"Test accuracy: {test_acc}")
+@tf.function
+def valid_step(images, labels):
+    predictions = model(images, training=False)
+    loss = tf.keras.losses.categorical_crossentropy(labels, predictions)
+    return loss, predictions
 
-    # Save the final model
-    model.save('final_model_after_additional_training.keras')
+# Training loop
+for epoch in range(20):
+    print(f'Epoch {epoch+1}/{20}')
+    
+    # Training
+    for batch_idx, (images, labels) in enumerate(train_generator):
+        train_loss, train_predictions = train_step(images, labels)
+        if batch_idx % 10 == 0:
+            print(f'Batch {batch_idx}, Loss: {tf.reduce_mean(train_loss).numpy()}')
+    
+    # Validation
+    valid_losses = []
+    for images, labels in valid_generator:
+        valid_loss, valid_predictions = valid_step(images, labels)
+        valid_losses.append(valid_loss)
+    print(f'Validation Loss: {tf.reduce_mean(valid_losses).numpy()}')
 
-    # Save the class indices
-    with open('class_indices.json', 'w') as f:
-        json.dump(train_generator.class_indices, f)
+# Evaluate the model
+test_losses = []
+test_accuracies = []
+for images, labels in test_generator:
+    test_loss, test_predictions = valid_step(images, labels)
+    test_losses.append(test_loss)
+    test_accuracies.append(tf.keras.metrics.categorical_accuracy(labels, test_predictions))
+print(f'Test Loss: {tf.reduce_mean(test_losses).numpy()}')
+print(f'Test Accuracy: {tf.reduce_mean(test_accuracies).numpy()}')
 
-    # Plot training history
-    plt.figure(figsize=(12, 4))
-    plt.subplot(1, 2, 1)
-    plt.plot(history.history['accuracy'], label='Training Accuracy')
-    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
-    plt.title('Model Accuracy')
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.legend()
+# Save the final model
+model.save('final_model_after_additional_training.keras')
 
-    plt.subplot(1, 2, 2)
-    plt.plot(history.history['loss'], label='Training Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.title('Model Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.legend()
+# Save the class indices
+with open('class_indices.json', 'w') as f:
+    json.dump(train_generator.class_indices, f)
 
-    plt.tight_layout()
-    plt.show()
-
-except Exception as e:
-    print(f"An error occurred during training: {e}")
