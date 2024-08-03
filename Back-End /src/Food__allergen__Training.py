@@ -1,13 +1,12 @@
 
 import os
 import json
-import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
 import numpy as np
 from PIL import Image
-from tensorflow.keras.utils import Sequence  # Add this import
-from tensorflow.keras.preprocessing.image import ImageDataGenerator  # Add this import
+from tensorflow.keras.utils import Sequence
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Define the correct class indices
 class_indices = {
@@ -28,7 +27,6 @@ def load_annotations(annotation_file):
 
 # Load annotations
 train_annotations = load_annotations('../dataset/train/_annotations.csv')
-test_annotations = load_annotations('../dataset/test/_annotations.csv')
 valid_annotations = load_annotations('../dataset/valid/_annotations.csv')
 
 # Custom data generator
@@ -88,18 +86,15 @@ class CustomDataGenerator(Sequence):
 # Paths
 train_dir = '../dataset/train'
 valid_dir = '../dataset/valid'
-test_dir = '../dataset/test'
 
 # Create custom data generators
 batch_size = 32  # Increased batch size to manage memory
 train_generator = CustomDataGenerator(train_annotations, train_dir, batch_size, augment=True, class_indices=class_indices)
 valid_generator = CustomDataGenerator(valid_annotations, valid_dir, batch_size, class_indices=class_indices)
-test_generator = CustomDataGenerator(test_annotations, test_dir, batch_size, class_indices=class_indices)
 
 # Print some information
 print(f"Number of training samples: {len(train_generator.annotations)}")
 print(f"Number of validation samples: {len(valid_generator.annotations)}")
-print(f"Number of test samples: {len(test_generator.annotations)}")
 print(f"Number of classes: {train_generator.n_classes}")
 print(f"Class indices: {train_generator.class_indices}")
 
@@ -200,26 +195,18 @@ for epoch in range(20):
         train_loss, train_predictions = train_step(images, labels)
         if batch_idx % 10 == 0:
             print(f'Batch {batch_idx}, Loss: {tf.reduce_mean(train_loss).numpy()}')
-    
-    # Validation
-    valid_losses = []
-    for images, labels in valid_generator:
-        valid_loss, valid_predictions = valid_step(images, labels)
-        valid_losses.append(valid_loss)
-    print(f'Validation Loss: {tf.reduce_mean(valid_losses).numpy()}')
 
-# Evaluate the model
-test_losses = []
-test_accuracies = []
-for images, labels in test_generator:
-    test_loss, test_predictions = valid_step(images, labels)
-    test_losses.append(test_loss)
-    test_accuracies.append(tf.keras.metrics.categorical_accuracy(labels, test_predictions))
-print(f'Test Loss: {tf.reduce_mean(test_losses).numpy()}')
-print(f'Test Accuracy: {tf.reduce_mean(test_accuracies).numpy()}')
+    # Validation
+    valid_loss = []
+    for batch_idx, (images, labels) in enumerate(valid_generator):
+        loss, _ = valid_step(images, labels)
+        valid_loss.append(tf.reduce_mean(loss).numpy())
+
+    avg_valid_loss = np.mean(valid_loss)
+    print(f'Validation Loss: {avg_valid_loss}')
 
 # Save the final model
-model.save('final_model_after_additional_training.keras')
+model.save('final_model_after_training.keras')
 
 # Save the class indices
 with open('class_indices.json', 'w') as f:

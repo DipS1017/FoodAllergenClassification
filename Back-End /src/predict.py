@@ -28,7 +28,7 @@ indices_class = {v: k for k, v in class_indices.items()}
 allergen_info_path = 'class_allergen_map.json'
 with open(allergen_info_path, 'r') as f:
     allergen_info = json.load(f)
-
+#
 def preprocess_image(img):
     img = img.resize((416, 416))
     img_array = image.img_to_array(img)
@@ -125,9 +125,9 @@ def predict():
     # Calculate the highest confidence percentage
     max_confidence = max([float(conf.strip('%')) for _, conf in predictions_with_labels])
     
-    if max_confidence < 45:
+    if max_confidence < 25:
         response = {
-            'prediction': 'Food not detected',
+            'prediction': 'Food allergens not detected',
             'allergen': '',
             'description': '',
             'confidence': predictions_with_labels
