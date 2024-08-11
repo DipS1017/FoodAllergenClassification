@@ -4,13 +4,13 @@ import os
 import base64
 from io import BytesIO
 import uuid
-
+from flask_cors import CORS
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from PIL import Image
-from flask import Flask, redirect, render_template, request, url_for, jsonify, send_from_directory
+from flask import Flask, request, jsonify, url_for
 
 # Load the trained model
 model_path = 'final_model_after_additional_training.keras'
@@ -28,7 +28,7 @@ indices_class = {v: k for k, v in class_indices.items()}
 allergen_info_path = 'class_allergen_map.json'
 with open(allergen_info_path, 'r') as f:
     allergen_info = json.load(f)
-#
+
 def preprocess_image(img):
     img = img.resize((416, 416))
     img_array = image.img_to_array(img)
@@ -50,69 +50,16 @@ def predict_image(model, img_array):
     return predicted_class_label, predictions_with_labels
 
 app = Flask(__name__)
+CORS(app)
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def home():
-    return redirect(url_for('upload'))
+    return jsonify({'message': 'Welcome to the Food Allergen Detection API'})
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            return redirect(request.url)
-        if file:
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(file_path)
-
-            # Preprocess the image and make prediction
-            img = Image.open(file_path)
-            img_array = preprocess_image(img)
-            predicted_class_label, predictions_with_labels = predict_image(model, img_array)
-            allergen = allergen_info[predicted_class_label]['allergen']
-            description = allergen_info[predicted_class_label]['description']
-            
-            return render_template('upload.html', filename=file.filename, 
-                                   predicted_class_label=predicted_class_label,
-                                   allergen=allergen, 
-                                   description=description,
-                                   predictions_with_labels=predictions_with_labels)
-
-    elif request.method == 'GET' and 'filename' in request.args:
-        filename = request.args['filename']
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        if os.path.exists(file_path):
-            # Preprocess the image and make prediction
-            img = Image.open(file_path)
-            img_array = preprocess_image(img)
-            predicted_class_label, predictions_with_labels = predict_image(model, img_array)
-            allergen = allergen_info[predicted_class_label]['allergen']
-            description = allergen_info[predicted_class_label]['description']
-            
-            return render_template('upload.html', filename=filename, 
-                                   predicted_class_label=predicted_class_label,
-                                   allergen=allergen, 
-                                   description=description,
-                                   predictions_with_labels=predictions_with_labels)
-
-    return render_template('upload.html')
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@app.route('/camera')
-def camera():
-    return render_template('camera.html')
-
-
-@app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predict():
     data = request.get_json()
     image_data = data['image']
@@ -143,7 +90,8 @@ def predict():
         }
     
     return jsonify(response)
-@app.route('/capture', methods=['POST'])
+
+@app.route('/api/capture', methods=['POST'])
 def capture():
     data = request.get_json()
     image_data = data['image']
