@@ -39,10 +39,11 @@ img {
     background-color: #fff;
 }
 .left-col{
-width:400px;
-overflow:hidden;
+width:60%;
+/* overflow:hidden; */
 
 }
+button
 p {
     font-size: 1.2em;
     color: #555;
@@ -56,6 +57,7 @@ button {
     background-color: #007bff;
     color: white;
     padding: 10px 15px;
+  margin: 5px;
     border: none;
     border-radius: 5px;
     cursor: pointer;

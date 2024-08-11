@@ -128,8 +128,8 @@ def predict():
     if max_confidence < 25:
         response = {
             'prediction': 'Food allergens not detected',
-            'allergen': '',
-            'description': '',
+            'allergen': '0',
+            'description': '0',
             'confidence': predictions_with_labels
         }
     else:
