@@ -72,7 +72,7 @@ def predict():
     # Calculate the highest confidence percentage
     max_confidence = max([float(conf.strip('%')) for _, conf in predictions_with_labels])
     
-    if max_confidence < 25:
+    if max_confidence < 30:
         response = {
             'prediction': 'Food allergens not detected',
             'allergen': '0',
