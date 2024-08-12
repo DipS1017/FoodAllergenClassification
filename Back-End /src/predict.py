@@ -52,8 +52,7 @@ def predict_image(model, img_array):
 app = Flask(__name__)
 CORS(app)
 
-UPLOAD_FOLDER = 'static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/')
 def home():
@@ -90,19 +89,6 @@ def predict():
         }
     
     return jsonify(response)
-
-@app.route('/api/capture', methods=['POST'])
-def capture():
-    data = request.get_json()
-    image_data = data['image']
-    image_data = image_data.split(',')[1]
-    image_data = base64.b64decode(image_data)
-    img = Image.open(BytesIO(image_data))
-    unique_filename = f"captured_image_{uuid.uuid4().hex}.jpg"
-    img_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-    img.save(img_path)
-    return jsonify({'url': url_for('upload', filename=unique_filename)})
-
 if __name__ == '__main__':
     app.run(debug=True)
 

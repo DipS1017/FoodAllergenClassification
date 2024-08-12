@@ -198,6 +198,7 @@ const RealTimeCamera: React.FC = () => {
                 overflow: "hidden",
                 position: "relative",
                 marginY: 2,
+backgroundColor: !stream ? 'black' : 'transparent',
               }}
             >
               <Box
