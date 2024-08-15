@@ -1,6 +1,5 @@
 # Food Allergen Classification Project
 
-![Project Logo](path/to/logo.png)
 
 ## Overview
 
