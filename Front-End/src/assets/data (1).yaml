@@ -1,0 +1,8 @@
+path: ../datasets/roboflow
+
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 30
+names: ['alcohol', 'alcohol_glass', 'almond', 'avocado', 'blackberry', 'blueberry', 'bread', 'bread_loaf', 'capsicum', 'cheese', 'chocolate', 'cooked_meat', 'dates', 'egg', 'eggplant', 'icecream', 'milk', 'milk_based_beverage', 'mushroom', 'non_milk_based_beverage', 'pasta', 'pineapple', 'pistachio', 'pizza', 'raw_meat', 'roti', 'spinach', 'strawberry', 'tomato', 'whole_egg_boiled']
