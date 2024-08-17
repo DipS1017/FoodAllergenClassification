@@ -12,46 +12,9 @@ import {
   TableContainer,
   Grid,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { StyledTableCell,ResponsiveTypography } from "../../components/Theme/StyledComponents";
 import { useNavigate } from "react-router-dom";
 import UploadIcon from '@mui/icons-material/Upload';
-
-// Custom StyledTableCell with responsive font sizes and h4 typography
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.up("xs")]: {
-    fontSize: "0.8rem",
-  },
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "1rem",
-  },
-  [theme.breakpoints.up("md")]: {
-    fontSize: "1.2rem",
-  },
-  [theme.breakpoints.up("lg")]: {
-    fontSize: "1.4rem",
-  },
-  [theme.breakpoints.up("xl")]: {
-    fontSize: "1.6rem",
-  },
-}));
-
-const ResponsiveTypography = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.up("xs")]: {
-    fontSize: "1.22rem",
-  },
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "1.4rem",
-  },
-  [theme.breakpoints.up("md")]: {
-    fontSize: "1.6rem",
-  },
-  [theme.breakpoints.up("lg")]: {
-    fontSize: "1.8rem",
-  },
-  [theme.breakpoints.up("xl")]: {
-    fontSize: "2rem",
-  },
-}));
 
 const RealTimeCamera: React.FC = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -169,7 +132,7 @@ const RealTimeCamera: React.FC = () => {
         gutterBottom
         sx={{ textAlign: "center", color: "#454B1B" }}
       >
-        Food Allergen Detection - Real-Time Camera
+        Food Allergen Classification- Real-Time Camera
       </ResponsiveTypography>
       <Grid container spacing={4} justifyContent="center" alignItems="center">
         <Grid item xs={12} md={6}>

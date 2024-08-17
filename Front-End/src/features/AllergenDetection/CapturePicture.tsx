@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   Button,
@@ -12,46 +11,13 @@ import {
   TableContainer,
   Grid,
   Input,
+  ButtonGroup,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import {
+  StyledTableCell,
+  ResponsiveTypography,
+} from "../../components/Theme/StyledComponents";
 import { useLocation, Link } from "react-router-dom"; // Import Link for routing
-
-// Custom StyledTableCell with responsive font sizes
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.up("xs")]: {
-    fontSize: "0.8rem",
-  },
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "1rem",
-  },
-  [theme.breakpoints.up("md")]: {
-    fontSize: "1.2rem",
-  },
-  [theme.breakpoints.up("lg")]: {
-    fontSize: "1.4rem",
-  },
-  [theme.breakpoints.up("xl")]: {
-    fontSize: "1.6rem",
-  },
-}));
-
-const ResponsiveTypography = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.up("xs")]: {
-    fontSize: "1.2rem",
-  },
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "1.4rem",
-  },
-  [theme.breakpoints.up("md")]: {
-    fontSize: "1.6rem",
-  },
-  [theme.breakpoints.up("lg")]: {
-    fontSize: "1.8rem",
-  },
-  [theme.breakpoints.up("xl")]: {
-    fontSize: "2rem",
-  },
-}));
 
 const CapturedPicture: React.FC = () => {
   const location = useLocation();
@@ -88,11 +54,14 @@ const CapturedPicture: React.FC = () => {
     }
   }, [image]);
 
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      processImage(event.target.files[0]);
-    }
-  }, []);
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files && event.target.files[0]) {
+        processImage(event.target.files[0]);
+      }
+    },
+    [],
+  );
 
   const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -102,10 +71,13 @@ const CapturedPicture: React.FC = () => {
     }
   }, []);
 
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, []);
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [],
+  );
 
   const processImage = (file: File) => {
     const reader = new FileReader();
@@ -149,14 +121,16 @@ const CapturedPicture: React.FC = () => {
               onChange={handleImageUpload}
               sx={{ display: "none" }}
             />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Upload Image
-            </Button>
-            <Link to="/" style={{ textDecoration: 'none' }}>
+            <ButtonGroup variant="contained" aria-label="Basic button group">
+              {" "}
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                color="primary"
+              >
+                Upload Image
+              </Button>
+
+              <Link to="/realtime-camera" style={{ textDecoration: "none" }} >
               <Button
                 variant="contained"
                 color="secondary"
@@ -164,7 +138,8 @@ const CapturedPicture: React.FC = () => {
               >
                 Use Real-Time Camera
               </Button>
-            </Link>
+              </Link>
+            </ButtonGroup>
             <Box
               ref={dropZoneRef}
               onDrop={handleDrop}
@@ -190,7 +165,11 @@ const CapturedPicture: React.FC = () => {
                 <img
                   src={imageSrc}
                   alt="Captured"
-                  style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "cover" }}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "400px",
+                    objectFit: "cover",
+                  }}
                 />
               )}
             </Box>
@@ -199,8 +178,12 @@ const CapturedPicture: React.FC = () => {
                 <ResponsiveTypography sx={{ marginTop: 2 }}>
                   Prediction: {prediction}
                 </ResponsiveTypography>
-                <ResponsiveTypography>Allergen: {allergen}</ResponsiveTypography>
-                <ResponsiveTypography>Description: {description}</ResponsiveTypography>
+                <ResponsiveTypography>
+                  Allergen: {allergen}
+                </ResponsiveTypography>
+                <ResponsiveTypography>
+                  Description: {description}
+                </ResponsiveTypography>
               </>
             )}
           </Box>
@@ -236,4 +219,3 @@ const CapturedPicture: React.FC = () => {
 };
 
 export default CapturedPicture;
-
