@@ -6,10 +6,11 @@ import {
   Typography,
   Toolbar,
   styled,
+  useMediaQuery
 } from "@mui/material";
-import { Fastfood, Home, ImageSearch, ListAlt } from "@mui/icons-material";
+import { Fastfood, Home, ImageSearch, ListAlt, Menu } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
-
+import useResponsive from "../../hooks/useResponsive";
 // Styled Toolbar
 const StyleToolbar = styled(Toolbar)({
   display: "flex",
@@ -26,8 +27,8 @@ const StyleLink = styled(RouterLink)({
     textDecoration: "underline",
   },
 });
-
 function Navbar() {
+ const {isSmallScreen,isMediumScreen}=useResponsive(); 
   return (
     <Box>
       <AppBar position="sticky" sx={{
@@ -45,7 +46,10 @@ function Navbar() {
             </StyleLink>
           </Typography>
           <Fastfood sx={{ display: { xs: "flex", sm: "none" } }} />
-          <Typography variant="h6" sx={{ display: "flex", gap: 4 }}>
+
+            <Menu sx={{display:isMediumScreen?"flex":"none"}}></Menu>
+          
+          <Typography variant="h6" sx={{display:isMediumScreen?"none":"flex", gap: 4 }}>
             <StyleLink to="/">
               <Home fontSize="small" /> Home
             </StyleLink>

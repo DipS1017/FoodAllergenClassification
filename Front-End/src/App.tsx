@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import RealTimeCamera from "./features/AllergenDetection/RealTimeCamera";
 import CapturedPicture from "./features/AllergenDetection/CapturePicture";
-import Home from "./components/home/Home";
+import Home from "./components/Home/Home";
 import Navbar from "./components/Navbar/Navbar";
 
 const App: React.FC = () => {
