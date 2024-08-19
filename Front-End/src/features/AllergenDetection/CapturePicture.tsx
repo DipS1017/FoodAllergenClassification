@@ -34,7 +34,7 @@ const CapturedPicture: React.FC = () => {
   useEffect(() => {
     if (image) {
       // Process the image from the route state
-      const dataURL = image; // Assuming `image` is already a data URL
+      const dataURL = image; // Assuming image is already a data URL
       fetch("http://localhost:5000/api/predict", {
         method: "POST",
         headers: {
@@ -131,13 +131,13 @@ const CapturedPicture: React.FC = () => {
               </Button>
 
               <Link to="/realtime-camera" style={{ textDecoration: "none" }} >
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ marginLeft: 2 }}
-              >
-                Use Real-Time Camera
-              </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{ marginLeft: 2 }}
+                >
+                  Use Real-Time Camera
+                </Button>
               </Link>
             </ButtonGroup>
             <Box
