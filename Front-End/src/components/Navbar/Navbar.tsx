@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   AppBar,
@@ -6,9 +5,16 @@ import {
   Typography,
   Toolbar,
   styled,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
-import { Fastfood, Home, ImageSearch, ListAlt, Menu } from "@mui/icons-material";
+import {
+  Fastfood,
+  Home,
+  HowToReg,
+  ImageSearch,
+  ListAlt,
+  Menu,
+} from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
 // Styled Toolbar
@@ -28,13 +34,16 @@ const StyleLink = styled(RouterLink)({
   },
 });
 function Navbar() {
- const {isSmallScreen,isMediumScreen}=useResponsive(); 
+  const { isSmallScreen, isMediumScreen } = useResponsive();
   return (
     <Box>
-      <AppBar position="sticky" sx={{
-        padding:'0.5% 2%',
-  backgroundColor: "#00712D",
-      }}>
+      <AppBar
+        position="sticky"
+        sx={{
+          padding: "0.5% 2%",
+          backgroundColor: "#00712D",
+        }}
+      >
         <StyleToolbar>
           <Typography
             variant="h5"
@@ -47,9 +56,12 @@ function Navbar() {
           </Typography>
           <Fastfood sx={{ display: { xs: "flex", sm: "none" } }} />
 
-            <Menu sx={{display:isMediumScreen?"flex":"none"}}></Menu>
-          
-          <Typography variant="h6" sx={{display:isMediumScreen?"none":"flex", gap: 4 }}>
+          <Menu sx={{ display: isMediumScreen ? "flex" : "none" }}></Menu>
+
+          <Typography
+            variant="h6"
+            sx={{ display: isMediumScreen ? "none" : "flex", gap: 4 }}
+          >
             <StyleLink to="/">
               <Home fontSize="small" /> Home
             </StyleLink>
@@ -59,6 +71,9 @@ function Navbar() {
             <StyleLink to="/about">
               <ListAlt fontSize="small" /> About
             </StyleLink>
+            <StyleLink to="/register">
+              <HowToReg fontSize="small" /> Sign Up 
+            </StyleLink>
           </Typography>
         </StyleToolbar>
       </AppBar>
@@ -67,4 +82,3 @@ function Navbar() {
 }
 
 export default Navbar;
-

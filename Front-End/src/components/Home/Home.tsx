@@ -40,10 +40,10 @@ function Home() {
             }}
           >
             <Typography
-              variant={isSmallScreen ? "h4" : "h3"}
+              variant={isSmallScreen ? "h3" : "h2"}
               sx={{ zIndex: 2, fontWeight: 600, padding: "5%" }}
             >
-              Food Allergen Classification using CNN
+              Food Allergen Classification
             </Typography>
             <Typography
               variant={isSmallScreen ? "h6" : "h5"}
@@ -77,8 +77,8 @@ function Home() {
               </Link>
             </ButtonGroup>
             <Typography
-              variant="h6"
-              sx={{ fontWeight: "600", padding: "2% 5% 2% 5%" }}
+              variant="subtitle1"
+              sx={{ fontWeight: "600", padding: "2%  " }}
             >
               Not logged in? Log in to use the real-time camera feature.
             </Typography>

@@ -5,7 +5,8 @@ import RealTimeCamera from "./features/AllergenDetection/RealTimeCamera";
 import CapturedPicture from "./features/AllergenDetection/CapturePicture";
 import Home from "./components/Home/Home";
 import Navbar from "./components/Navbar/Navbar";
-
+import Register from "./components/Auth/Register";
+import Login from "./components/Auth/Login";
 const App: React.FC = () => {
   return (
     <Router>
@@ -14,6 +15,9 @@ const App: React.FC = () => {
         <Route path="/" element={<Home/>} />
         <Route path="/captured-picture" element={<CapturedPicture />} />
         <Route path="/realtime-camera" element={<RealTimeCamera />}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/login" element={<Login/>}/>
+
       </Routes>
     </Router>
   );
