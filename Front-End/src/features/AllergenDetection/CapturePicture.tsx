@@ -12,6 +12,7 @@ import {
   Grid,
   Input,
   ButtonGroup,
+  Grow,
 } from "@mui/material";
 import {
   StyledTableCell,
@@ -20,6 +21,9 @@ import {
 import { useLocation, Link } from "react-router-dom"; // Import Link for routing
 
 const CapturedPicture: React.FC = () => {
+
+  const [checked, setChecked] = useState(true);
+  
   const location = useLocation();
   const image = location.state?.image as string;
 
@@ -104,6 +108,8 @@ const CapturedPicture: React.FC = () => {
   };
 
   return (
+
+      <Grow in={checked}>
     <Box sx={{ padding: 4 }}>
       <ResponsiveTypography
         variant="h4"
@@ -111,7 +117,7 @@ const CapturedPicture: React.FC = () => {
         sx={{ textAlign: "center", color: "#454B1B" }}
       >
         Captured Image Analysis
-      </ResponsiveTypography>
+        </ResponsiveTypography>
       <Grid container spacing={4} justifyContent="center" alignItems="center">
         <Grid item xs={12} sm={10} md={6}>
           <Box sx={{ textAlign: "center" }}>
@@ -214,7 +220,10 @@ const CapturedPicture: React.FC = () => {
           </Grid>
         )}
       </Grid>
+
     </Box>
+
+      </Grow>
   );
 };
 

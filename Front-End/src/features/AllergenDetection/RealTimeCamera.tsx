@@ -11,12 +11,15 @@ import {
   TableBody,
   TableContainer,
   Grid,
+  Grow,
 } from "@mui/material";
 import { StyledTableCell,ResponsiveTypography } from "../../components/Theme/StyledComponents";
 import { useNavigate } from "react-router-dom";
 import UploadIcon from '@mui/icons-material/Upload';
 
 const RealTimeCamera: React.FC = () => {
+
+  const [checked, setChecked] = useState(true);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [prediction, setPrediction] = useState("");
   const [allergen, setAllergen] = useState("");
@@ -126,6 +129,7 @@ const RealTimeCamera: React.FC = () => {
   }, [stream, processCameraFrame]);
 
   return (
+    <Grow in={checked}>
     <Box sx={{ padding: 4 }}>
       <ResponsiveTypography
         variant="h4"
@@ -239,6 +243,7 @@ backgroundColor: !stream ? 'black' : 'transparent',
         style={{ display: "none" }}
       />
     </Box>
+</Grow>
   );
 };
 

@@ -40,7 +40,7 @@ function Home() {
             }}
           >
             <Typography
-              variant={isSmallScreen ? "h3" : "h2"}
+              variant={isSmallScreen ? "h4" : "h3"}
               sx={{ zIndex: 2, fontWeight: 600, padding: "5%" }}
             >
               Food Allergen Classification
@@ -82,9 +82,12 @@ function Home() {
             >
               Not logged in? Log in to use the real-time camera feature.
             </Typography>
+            <Link to="/login">
             <Button variant="contained" color="success">
+
               <Login></Login>Log In
             </Button>
+</Link>
           </Container>
         </Grow>
         <Grow in={checked}>

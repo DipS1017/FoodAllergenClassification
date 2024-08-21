@@ -22,7 +22,8 @@ import {
 
 
 const Register: React.FC = () => {
-  const { isSmallScreen,isMediumScreen } = useResponsive();
+
+  const {isMediumScreen } = useResponsive();
 
   const [checked, setChecked] = useState(true);
   const paperStyle = {
@@ -48,7 +49,7 @@ const Register: React.FC = () => {
                     </Typography>
                 </Grid>
                 <form>
-                    <TextField fullWidth label='Name' placeholder="Enter your name" margin="normal" />
+                    <TextField fullWidth label='Name' placeholder="Enter your Name" margin="normal" />
                     <TextField fullWidth label='Email' placeholder="Enter your email" margin="normal" />
                     <FormControl component="fieldset" style={marginTop} fullWidth>
                         <FormLabel component="legend">Gender</FormLabel>
