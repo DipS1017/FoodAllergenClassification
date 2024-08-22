@@ -58,12 +58,13 @@ const login = async (
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
-    const token = jwt.sign(
-      { userId: user.id, roles: user.role },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
-    );
-    res.status(200).json({ token });
+    // const token = jwt.sign(
+    //   { userId: user.id, roles: user.role },
+    //   process.env.JWT_SECRET as string,
+    //   { expiresIn: "1h" }
+    // );
+    // res.status(200).json({ token });
+      res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ error: "Login Failed" });
