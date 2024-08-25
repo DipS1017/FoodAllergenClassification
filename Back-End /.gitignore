@@ -1,3 +1,7 @@
 # Ignore all .keras files
 *.keras
 
+flask-microservice/venv/
+
+*.env
+
