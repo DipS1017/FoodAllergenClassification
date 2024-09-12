@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
+import axios from 'axios';
 import * as Yup from 'yup';
 import { Person } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Grid, Grow, Paper, Avatar, Typography, TextField, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Button } from '@mui/material';
 
 // Define the validation schema with Yup
@@ -24,6 +25,7 @@ const validationSchema = Yup.object({
 });
 
 const Register: React.FC = () => {
+const navigate=useNavigate();
   const [values, setValues] = useState({
     username: '',
     email: '',
@@ -65,7 +67,9 @@ const Register: React.FC = () => {
     try {
       await validationSchema.validate(values, { abortEarly: false });
       // Form is valid; handle form submission here
+      const response=await axios.post('http://localhost:3000/api/auth/register',values);
       console.log('Form submitted:', values);
+      navigate('/login');
     } catch (err) {
       const validationErrors = err.inner.reduce((acc: any, error: any) => {
         acc[error.path] = error.message;
@@ -182,7 +186,8 @@ const Register: React.FC = () => {
               />
             </FormControl>
 
-            <Button type='submit' variant='contained' color='primary' fullWidth style={marginTop}>
+            <Button type='submit'  variant='contained' color='primary' fullWidth style={marginTop}>
+            
               Sign up
             </Button>
 

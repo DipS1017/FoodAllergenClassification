@@ -1,9 +1,11 @@
 import {Response,Request } from 'express';
 import  Express  from "express";
+import cors from "cors";
 import authRoutes from './routes/authRoutes';
 const app=Express();
 
 app.use(Express.json());
+app.use(cors());
 app.use('/api/auth',authRoutes);
 
 app.get('/',(req:Request,res:Response)=>{
