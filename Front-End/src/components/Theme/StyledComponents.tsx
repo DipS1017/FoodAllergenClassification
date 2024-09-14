@@ -39,6 +39,24 @@ const ResponsiveTypography = styled(Typography)(({ theme }) => ({
     fontSize: '2rem',
   },
 }));
+const TextTypography = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    fontSize: '1rem',
+  },
+  [theme.breakpoints.up('sm')]: {
+    fontSize: '1.2rem',
+  },
+  [theme.breakpoints.up('md')]: {
+    fontSize: '1.4rem',
+  },
+  [theme.breakpoints.up('lg')]: {
+    fontSize: '1.6rem',
+  },
+  [theme.breakpoints.up('xl')]: {
+    fontSize: '1.8rem',
+  },
+}));
 
-export { StyledTableCell, ResponsiveTypography };
+
+export { StyledTableCell, ResponsiveTypography, TextTypography };
 

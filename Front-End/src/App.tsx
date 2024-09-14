@@ -7,12 +7,14 @@ import Home from "./components/Home/Home";
 import Navbar from "./components/Navbar/Navbar";
 import Register from "./components/Auth/Register";
 import Login from "./components/Auth/Login";
+import About from './components/About/About';
 const App: React.FC = () => {
   return (
     <Router>
       <Navbar/>
       <Routes>
         <Route path="/" element={<Home/>} />
+        <Route path="/about" element={<About/>} />
         <Route path="/captured-picture" element={<CapturedPicture />} />
         <Route path="/realtime-camera" element={<RealTimeCamera />}/>
         <Route path="/register" element={<Register/>}/>
