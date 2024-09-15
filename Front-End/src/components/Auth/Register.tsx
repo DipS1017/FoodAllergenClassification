@@ -60,25 +60,49 @@ const navigate=useNavigate();
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      await validationSchema.validate(values, { abortEarly: false });
-      // Form is valid; handle form submission here
-      const response=await axios.post('http://localhost:3000/api/auth/register',values);
-      console.log('Form submitted:', values);
-      navigate('/login');
-    } catch (err) {
-      const validationErrors = err.inner.reduce((acc: any, error: any) => {
-        acc[error.path] = error.message;
-        return acc;
-      }, {});
-      setErrors(validationErrors);
-    }
-  };
+    // Clear previous errors before validation/submission
+    setErrors({});
 
-  return (
+    try {
+        // Validate the form using Yup
+        await validationSchema.validate(values, { abortEarly: false });
+
+        // Form is valid; handle form submission here
+        const response = await axios.post('http://localhost:3000/api/auth/register', values);
+        console.log('Form submitted:', values);
+        navigate('/login');
+    } catch (err: any) {
+        // If Yup validation error occurs
+        if (err.name === 'ValidationError') {
+            const validationErrors = err.inner.reduce((acc: any, error: any) => {
+                acc[error.path] = error.message;
+                return acc;
+            }, {});
+            setErrors(validationErrors);
+        } else if (err.response && err.response.data) {
+            // Handle server-side errors (like duplicate email, username, or phone number)
+            if (err.response.data.errors) {
+                // If multiple errors are returned
+                const errorMessages = err.response.data.errors.reduce((acc: any, error: any) => {
+                    acc[error.field] = error.message;
+                    return acc;
+                }, {});
+                setErrors(errorMessages);
+            } else {
+                // Handle general server-side errors
+                setErrors({ general: 'Registration failed. Please try again.' });
+            }
+        } else {
+            // Handle unexpected errors
+            setErrors({ general: 'An unexpected error occurred. Please try again later.' });
+        }
+    }
+};
+return (
     <Grid>
       <Grow in={true}>
         <Paper elevation={5} style={paperStyle}>

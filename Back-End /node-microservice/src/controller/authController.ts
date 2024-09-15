@@ -32,13 +32,40 @@ const register = async (
         phoneNumber: phoneNumber || null,
       },
     });
-    res.status(201).json(user);
-  } catch (error) {
-    console.error("User Creation Error:", error);
-    res.status(500).json({ error: "User Creation Failed" });
-  }
-};
+    
+  // Respond with the created user details (or filter sensitive info like the password)
+    res.status(201).json({
+      message: "User registered successfully!",
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        gender: user.gender,
+      },
+    });
+ }
+catch (error: any) {
+  if (error.code === "P2002") {
+    // Handle unique constraint violation (duplicate email, username, or phone number)
+    const fields = error.meta.target; // Access all fields that caused the violation
 
+    // Map the unique constraint violation to the appropriate fields
+    const errorMessages = fields.map((field: string) => {
+      if (field === "email") return { field: "email", message: "Email already exists." };
+      if (field === "username") return { field: "username", message: "Username already exists." };
+      if (field === "phoneNumber") return { field: "phoneNumber", message: "Phone number already exists." };
+      return null;
+    }).filter(Boolean); // Remove any null values from the array
+
+    // Send all errors to the client
+    res.status(400).json({ errors: errorMessages });
+  } else {
+    // Handle other errors
+    console.error("User Creation Error:", error);
+    res.status(500).json({ error: "User registration failed." });
+  }
+}
+};
 const login = async (
   req: Request<{}, {}, { email: string; password: string }>,
   res: Response
@@ -58,18 +85,28 @@ const login = async (
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
-    // const token = jwt.sign(
-    //   { userId: user.id, roles: user.role },
-    //   process.env.JWT_SECRET as string,
-    //   { expiresIn: "1h" }
-    // );
-    // res.status(200).json({ token });
-      res.status(200).json({ message: "Login successful" });
+  
+    // Generate a JWT token
+    const token = jwt.sign(
+      { userId: user.id, roles: user.role }, // Assuming 'role' exists on your user model
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1h" }
+    );
+
+    // Send the token to the client
+    res.status(200).json({
+      message: "Login successful.",
+      token, // Include the token in the response
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        gender: user.gender,
+      },
+    });
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({ error: "Login Failed" });
+    res.status(500).json({ error: "Login failed." });
   }
-};
-
-export { register, login };
+};export { register, login };
 
