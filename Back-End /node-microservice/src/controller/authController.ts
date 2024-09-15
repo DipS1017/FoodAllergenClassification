@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../models/db";
 import dotenv from "dotenv";
-import { Gender } from "@prisma/client";
+import { Gender,Role } from "@prisma/client";
 
 dotenv.config();
 
@@ -14,13 +14,14 @@ interface RegisterRequestBody {
   password: string;
   gender: Gender;
   phoneNumber?: string;
+  role?: Role; 
 }
 
 const register = async (
   req: Request<{}, {}, RegisterRequestBody>,
   res: Response
 ): Promise<void> => {
-  const { email, username, password, gender, phoneNumber } = req.body;
+  const { email, username, password, gender, phoneNumber,role } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
@@ -30,6 +31,7 @@ const register = async (
         password: hashedPassword,
         gender,
         phoneNumber: phoneNumber || null,
+        role:role|| 'USER',
       },
     });
     
@@ -41,6 +43,7 @@ const register = async (
         email: user.email,
         username: user.username,
         gender: user.gender,
+        role: user.role,
       },
     });
  }
@@ -88,11 +91,11 @@ const login = async (
   
     // Generate a JWT token
     const token = jwt.sign(
-      { userId: user.id, roles: user.role }, // Assuming 'role' exists on your user model
+      { userId: user.id, roles: user.role  }, // Assuming 'role' exists on your user model
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
-
+console.log('Generated Token:', token);
     // Send the token to the client
     res.status(200).json({
       message: "Login successful.",
