@@ -1,11 +1,16 @@
-import React from "react";
+
+import React, { useState } from "react";
 import {
   AppBar,
   Box,
   Typography,
   Toolbar,
   styled,
+  Avatar,
   useMediaQuery,
+  Button,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import {
   Fastfood,
@@ -13,10 +18,12 @@ import {
   HowToReg,
   ImageSearch,
   ListAlt,
-  Menu,
+  Menu as MenuIcon,
 } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
+import UserProfile from "../Profile/UserProfile";
+
 // Styled Toolbar
 const StyleToolbar = styled(Toolbar)({
   display: "flex",
@@ -33,8 +40,24 @@ const StyleLink = styled(RouterLink)({
     textDecoration: "underline",
   },
 });
+
 function Navbar() {
   const { isSmallScreen, isMediumScreen } = useResponsive();
+  
+  // State for handling the menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  // Menu open handler
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Menu close handler
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Box>
       <AppBar
@@ -56,7 +79,8 @@ function Navbar() {
           </Typography>
           <Fastfood sx={{ display: { xs: "flex", sm: "none" } }} />
 
-          <Menu sx={{ display: isMediumScreen ? "flex" : "none" }}></Menu>
+          {/* The MenuIcon is displayed on medium screens */}
+          <MenuIcon sx={{ display: isMediumScreen ? "flex" : "none" }} />
 
           <Typography
             variant="h6"
@@ -65,15 +89,16 @@ function Navbar() {
             <StyleLink to="/">
               <Home fontSize="small" /> Home
             </StyleLink>
-            <StyleLink to="/realtime-camera">
+            <StyleLink to="/captured-picture">
               <ImageSearch fontSize="small" /> AI
             </StyleLink>
             <StyleLink to="/about">
               <ListAlt fontSize="small" /> About
             </StyleLink>
             <StyleLink to="/register">
-              <HowToReg fontSize="small" /> Sign Up 
+              <HowToReg fontSize="small" /> Sign Up
             </StyleLink>
+          <UserProfile/>
           </Typography>
         </StyleToolbar>
       </AppBar>
@@ -82,3 +107,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

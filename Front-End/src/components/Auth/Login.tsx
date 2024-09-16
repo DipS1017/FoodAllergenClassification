@@ -18,18 +18,23 @@ const Login:React.FC = () => {
   const avatarStyle = { backgroundColor:  '#00712D'};
   const btnstyle = { margin: '8px 0' };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log({ email, password });
-    try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
-      console.log('Received token:', response.data.token); // Log the token
-      localStorage.setItem('authToken', response.data.token); // Store the token in localStorage
-      navigate('/');
-    } catch (err: any) {
-      console.error("Login failed", err);
-    }
+ 
+const [error, setError] = useState<string | null>(null);
+
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  console.log({ email, password });
+  try {
+    const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
+    console.log('Received token:', response.data.token); // Log the token
+    localStorage.setItem('authToken', response.data.token); // Store the token in localStorage
+    navigate('/');
+  } catch (err: any) {
+    console.error("Login failed", err);
+    setError('Login failed. Please check your credentials and try again.');
   }
+}
+
 
   return (
     <form onSubmit={handleSubmit}>
