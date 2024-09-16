@@ -7,22 +7,23 @@ import {
   Toolbar,
   styled,
   Avatar,
-  useMediaQuery,
-  Button,
   Menu,
   MenuItem,
 } from "@mui/material";
 import {
   Fastfood,
   Home,
+  AccountCircle,
   HowToReg,
   ImageSearch,
   ListAlt,
   Menu as MenuIcon,
+  AccountBoxSharp,
+  AccountCircleRounded,
 } from "@mui/icons-material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
-import UserProfile from "../Profile/UserProfile";
+import axios from "axios";
 
 // Styled Toolbar
 const StyleToolbar = styled(Toolbar)({
@@ -43,20 +44,62 @@ const StyleLink = styled(RouterLink)({
 
 function Navbar() {
   const { isSmallScreen, isMediumScreen } = useResponsive();
-  
-  // State for handling the menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [userData, setUserData] = useState<{ name: string; profileImage: string } | null>(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
 
-  // Menu open handler
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Menu close handler
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleProfileClick = () => {
+    handleClose();
+    navigate("/profile");
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Call an API endpoint to invalidate the token
+      await axios.post('/api/logout'); // Ensure you have this route set up
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+
+    localStorage.removeItem('authToken');
+    setUserData(null); // Clear user data
+    handleClose();
+    navigate("/");
+  };
+
+  // Fetch user data on mount if token is present
+  React.useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const response = await axios.get('/api/user', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          setUserData(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        navigate('/login');
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
+  const token = localStorage.getItem('authToken'); // Check for token
 
   return (
     <Box>
@@ -95,10 +138,35 @@ function Navbar() {
             <StyleLink to="/about">
               <ListAlt fontSize="small" /> About
             </StyleLink>
-            <StyleLink to="/register">
-              <HowToReg fontSize="small" /> Sign Up
-            </StyleLink>
-          <UserProfile/>
+            {!token && (
+              <StyleLink to="/register">
+                <HowToReg fontSize="small" /> Sign Up
+              </StyleLink>
+            )}
+
+          {token && (
+            <>
+              <AccountCircleRounded
+                onClick={handleClick}
+                
+              >
+
+              </AccountCircleRounded>
+              <Menu
+                id="user-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'user-avatar',
+                }}
+              >
+                <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
+          )}
+
           </Typography>
         </StyleToolbar>
       </AppBar>

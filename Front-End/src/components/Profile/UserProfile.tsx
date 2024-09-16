@@ -1,87 +1,132 @@
 
-import React, { useState, useEffect } from 'react';
-import { Avatar, Menu, MenuItem } from '@mui/material';
+// src/pages/UserProfilePage.tsx
+import React, { useState } from 'react';
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from '@mui/material';
+import useUserProfile from "../../hooks/useUserProfile";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-const UserProfile: React.FC = () => {
-  const [userData, setUserData] = useState({
-    name: '',
-    profileImage: ''
-  });
+const UserProfilePage: React.FC = () => {
+  const { userProfile, loading, error } = useUserProfile();
+  const [formValues, setFormValues] = useState<UserProfile | null>(userProfile);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const navigate = useNavigate();
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token || !formValues) return;
+
+      await axios.put('/api/user/profile', formValues, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setSnackbarMessage('Profile updated successfully');
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setSnackbarMessage('Failed to update profile');
+      setOpenSnackbar(true);
+    }
   };
 
-  const handleProfileClick = () => {
-    handleClose();
-    navigate("/profile");
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    handleClose();
-    navigate("/");
-  };
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-          return;
-        }
-
-        const response = await axios.get("/api/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setUserData(response.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        navigate("/login");
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
-    <>
-      <Avatar
-        sx={{ bgcolor: "#00712D", cursor: "pointer" }}
-        onClick={handleClick}
-        alt={userData.name}
-        src={userData.profileImage}
-      />
-      <Menu
-        id="user-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'user-avatar',
-        }}
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        User Profile
+      </Typography>
+      {error && <Alert severity="error">{error}</Alert>}
+      {formValues && (
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Name"
+            name="name"
+            value={formValues.name}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Username"
+            name="username"
+            value={formValues.username}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            value={formValues.email}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Phone Number"
+            name="phoneNumber"
+            value={formValues.phoneNumber}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Gender"
+            name="gender"
+            value={formValues.gender}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Profile Image URL"
+            name="profileImage"
+            value={formValues.profileImage}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Save Changes
+          </Button>
+        </form>
+      )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
       >
-        <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
-      </Menu>
-    </>
+        <Alert onClose={() => setOpenSnackbar(false)} severity={error ? 'error' : 'success'}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
-export default UserProfile;
+export default UserProfilePage;
 

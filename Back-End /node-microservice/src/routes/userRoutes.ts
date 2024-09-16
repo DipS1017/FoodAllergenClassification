@@ -8,7 +8,7 @@ import prisma from "../models/db"; // Import the Prisma client instance
 const router = express.Router();
 
 // Mock secret for JWT (store it securely in production)
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET ; 
 
 // POST /api/login - User login route
 router.post("/login", async (req, res) => {
@@ -34,38 +34,73 @@ router.post("/login", async (req, res) => {
     // Generate a JWT token
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
 
-    res.json({ token, user: { username: user.username, name: user.name } });
+    res.json({ token, user: { username: user.username, } });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// GET /api/user - Get user data (Protected route)
-router.get("/user", authMiddleware, async (req, res) => {
-  const userId = req.user;
+// GET /api/user/profile - Get user profile data (Protected route)
+router.get('/user/profile', authMiddleware, async (req, res) => {
+  const userId = req.user; // User ID from the token
 
   try {
-    // Find user by ID from the database
+    // Fetch user from the database using Prisma
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
+    // Send user profile data
     res.json({
-      id: user.id,
-      name: user.name,
       username: user.username,
-      profileImage: user.profileImage,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      gender: user.gender,
     });
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error('Error fetching user profile data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// PUT /api/user/profile - Update user profile data (Protected route)
+router.put('/user/profile', authMiddleware, async (req, res) => {
+  const userId = req.user; // User ID from the token
+  const { name, username, email, phoneNumber, gender, profileImage } = req.body;
+
+  try {
+    // Find and update user profile using Prisma
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        username,
+        email,
+        phoneNumber,
+        gender,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Send updated user profile data
+    res.json({
+      username: user.username,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      gender: user.gender,
+    });
+  } catch (error) {
+    console.error('Error updating user profile data:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 export default router;
-
+;
