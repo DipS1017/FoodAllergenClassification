@@ -25,6 +25,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
 import axios from "axios";
 
+                //<MenuItem onClick={handleProfileClick}>Profile</MenuItem>
 // Styled Toolbar
 const StyleToolbar = styled(Toolbar)({
   display: "flex",
@@ -161,7 +162,6 @@ function Navbar() {
                   'aria-labelledby': 'user-avatar',
                 }}
               >
-                <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </>

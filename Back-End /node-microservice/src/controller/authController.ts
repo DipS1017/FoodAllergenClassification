@@ -95,7 +95,6 @@ const login = async (
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
-console.log('Generated Token:', token);
     // Send the token to the client
     res.status(200).json({
       message: "Login successful.",

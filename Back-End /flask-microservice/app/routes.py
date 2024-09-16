@@ -36,7 +36,7 @@ def register_routes(app):
             # Calculate the highest confidence percentage
             max_confidence = max([float(conf.strip('%')) for _, conf in predictions_with_labels])
             
-            if max_confidence < 45:
+            if max_confidence < 35:
                 response = {
                     'prediction': 'Food allergens not detected',
                     'allergen': '0',
