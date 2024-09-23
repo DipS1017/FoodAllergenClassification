@@ -121,8 +121,11 @@ function Navbar() {
               Allergen Classification
             </StyleLink>
           </Typography>
-          <Fastfood sx={{ display: { xs: "flex", sm: "none" } }} />
 
+            <StyleLink to="/">
+          <Fastfood sx={{ display: { xs: "flex", sm: "none" } }}  />
+
+            </StyleLink>
           {/* The MenuIcon is displayed on medium screens */}
           <MenuIcon sx={{ display: isMediumScreen ? "flex" : "none" }} />
 

@@ -6,7 +6,7 @@ def create_app():
     app = Flask(__name__)
     
     # Allow CORS for the specific origin
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+    CORS(app)
 
     # Import and register routes after the app is created to avoid circular imports
     with app.app_context():

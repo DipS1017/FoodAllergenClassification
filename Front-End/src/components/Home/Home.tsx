@@ -6,11 +6,14 @@ import {
   ButtonGroup,
   Container,
   Grow,
+  Paper,
   Typography,
 } from "@mui/material";
 import { Camera, Login, Upload } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
+import Cards from './Cards';
+import { ResponsiveTypography } from "../Theme/StyledComponents";
 function Home() {
   const { isSmallScreen, isMediumScreen } = useResponsive();
   const [checked, setChecked] = useState(true);
@@ -47,7 +50,7 @@ function Home() {
             </Typography>
             <Typography
               variant={isSmallScreen ? "h6" : "h5"}
-              sx={{ paddingX: "4%" }}
+              sx={{ paddingX: "3%" }}
             >
               Discover our Food Allergen Classification tool—your solution for
               accurate, real-time allergen detection. Simplify food safety with
@@ -58,7 +61,7 @@ function Home() {
             </Typography>
             <ButtonGroup
               sx={{
-                paddingX: "5%",
+                paddingX: "3%",
               }}
               size={isSmallScreen ? "small" : "large"}
               disableElevation
@@ -90,6 +93,7 @@ function Home() {
 </Link>
           </Container>
         </Grow>
+        
         <Grow in={checked}>
           <Box
             sx={{
@@ -103,9 +107,21 @@ function Home() {
               height: "80svh", // Adjust the height as needed
             }}
           />
+
         </Grow>
       </Box>
-    </>
+        <Box sx={{
+          paddingX:'5%',paddingY:'1%'
+        }}>
+        <Paper sx={{padding:'8%',textAlign:'center'}}><ResponsiveTypography>Classification Groups</ResponsiveTypography>
+
+      <Cards/>
+          </Paper>
+
+        
+        </Box>
+
+          </>
   );
 }
 

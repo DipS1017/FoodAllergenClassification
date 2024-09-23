@@ -1,0 +1,215 @@
+
+[
+  {
+    "id": 1,
+    "allergen": "Ovomucoid",
+    "food_label": "egg",
+    "description": "Images of egg with yolk (e.g. sunny side up eggs)",
+    "image_url": "src/assets/cards/Eggs.jpg"
+  },
+  {
+    "id": 2,
+    "allergen": "Ovomucoid",
+    "food_label": "whole_egg_boiled",
+    "description": "Images of soft and hard boiled eggs",
+    "image_url": "src/assets/cards/boiled-eggs.jpg"
+  },
+  {
+    "id": 3,
+    "allergen": "Lactose/Histamine",
+    "food_label": "milk",
+    "description": "Images of milk in a glass",
+    "image_url": "src/assets/cards/milk.jpeg"
+  },
+  {
+    "id": 4,
+    "allergen": "Lactose",
+    "food_label": "icecream",
+    "description": "Images of icecream scoops",
+    "image_url": "src/assets/cards/icecream.jpg"
+  },
+  {
+    "id": 5,
+    "allergen": "Lactose",
+    "food_label": "cheese",
+    "description": "Images of swiss cheese",
+    "image_url": "/images/cheese_swiss.jpg",
+    "image_url": "src/assets/cards/cheese.jpeg"
+  },
+  {
+    "id": 6,
+    "allergen": "Lactose/ Caffeine",
+    "food_label": "milk_based_beverage",
+    "description": "Images of tea/ coffee with milk in a cup/glass",
+    "image_url": "src/assets/cards/milkbased.jpg"
+  },
+  {
+    "id": 7,
+    "allergen": "Lactose/Caffeine",
+    "food_label": "chocolate",
+    "description": "Images of chocolate bars",
+    "image_url": "src/assets/cards/chocolate1.jpg"
+  },
+  {
+    "id": 8,
+    "allergen": "Caffeine",
+    "food_label": "non_milk_based_beverage",
+    "description": "Images of soft drinks and tea/coffee without milk in a cup/glass",
+    "image_url": "src/assets/cards/coke.jpg"
+  },
+  {
+    "id": 9,
+    "allergen": "Histamine",
+    "food_label": "cooked_meat",
+    "description": "Images of cooked meat",
+    "image_url": "src/assets/cards/cooked.jpg"
+  },
+  {
+    "id": 10,
+    "allergen": "Histamine",
+    "food_label": "raw_meat",
+    "description": "Images of raw meat",
+    "image_url": "src/assets/cards/raw.jpg"
+  },
+  {
+    "id": 11,
+    "allergen": "Histamine",
+    "food_label": "alcohol",
+    "description": "Images of alcohol bottles",
+    "image_url": "src/assets/cards/alcohol.png"
+  },
+  {
+    "id": 12,
+    "allergen": "Histamine",
+    "food_label": "alcohol_glass",
+    "description": "Images of wine glasses with alcohol",
+    "image_url": "src/assets/cards/alcohols.jpg"
+  },
+  {
+    "id": 13,
+    "allergen": "Histamine",
+    "food_label": "spinach",
+    "description": "Images of spinach bundle",
+    "image_url": "src/assets/cards/Spinach.jpg"
+  },
+  {
+    "id": 14,
+    "allergen": "Histamine",
+    "food_label": "avocado",
+    "description": "Images of avocado sliced in half",
+    "image_url": "src/assets/cards/avocado-1.jpg"
+  },
+  {
+    "id": 15,
+    "allergen": "Histamine",
+    "food_label": "eggplant",
+    "description": "Images of eggplant",
+    "image_url": "src/assets/cards/eggplant.jpg"
+  },
+  {
+    "id": 16,
+    "allergen": "Salicylate",
+    "food_label": "blueberry",
+    "description": "Images of blueberry",
+    "image_url": "src/assets/cards/blueberry.jpg"
+  },
+  {
+    "id": 17,
+    "allergen": "Salicylate",
+    "food_label": "blackberry",
+    "description": "Images of blackberry",
+    "image_url": "src/assets/cards/blackverry.jpg"
+  },
+  {
+    "id": 18,
+    "allergen": "Salicylate",
+    "food_label": "strawberry",
+    "description": "Images of strawberry",
+    "image_url": "src/assets/cards/strawberry.jpg"
+  },
+  {
+    "id": 19,
+    "allergen": "Salicylate",
+    "food_label": "pineapple",
+    "description": "Images of pineapple",
+    "image_url": "src/assets/cards/pineapple.jpg"
+  },
+  {
+    "id": 20,
+    "allergen": "Salicylate",
+    "food_label": "capsicum",
+    "description": "Images of bell pepper",
+    "image_url": "src/assets/cards/Capsicum.jpg"
+  },
+  {
+    "id": 21,
+    "allergen": "Salicylate",
+    "food_label": "mushroom",
+    "description": "Images of mushrooms",
+    "image_url": "src/assets/cards/mushroom.jpg"
+  },
+  {
+    "id": 22,
+    "allergen": "Salicylate",
+    "food_label": "dates",
+    "description": "Images of dates",
+    "image_url": "src/assets/cards/dates.jpeg"
+  },
+  {
+    "id": 23,
+    "allergen": "Salicylate",
+    "food_label": "almonds",
+    "description": "Images of almonds",
+    "image_url": "src/assets/cards/almonds.jpg"
+  },
+  {
+    "id": 24,
+    "allergen": "Salicylate",
+    "food_label": "pistachios",
+    "description": "Images of pistachios",
+    "image_url": "src/assets/cards/pistachios_plain.jpg"
+  },
+  {
+    "id": 25,
+    "allergen": "Salicylate",
+    "food_label": "tomato",
+    "description": "Images of tomato and tomato slices",
+    "image_url": "src/assets/cards/tomato.jpeg"
+  },
+  {
+    "id": 26,
+    "allergen": "Gluten",
+    "food_label": "roti",
+    "description": "Images of roti",
+    "image_url": "src/assets/cards/bell.jpg"
+  },
+  {
+    "id": 27,
+    "allergen": "Gluten",
+    "food_label": "pasta",
+    "description": "Images of one serving of penne pasta",
+    "image_url": "src/assets/cards/pasta.jpeg"
+  },
+  {
+    "id": 28,
+    "allergen": "Gluten",
+    "food_label": "bread",
+    "description": "Images of bread slices",
+    "image_url": "src/assets/cards/bread.jpg"
+  },
+  {
+    "id": 29,
+    "allergen": "Gluten",
+    "food_label": "bread_loaf",
+    "description": "Images of bread loaf",
+    "image_url": "src/assets/cards/breadloaf.jpg"
+  },
+  {
+    "id": 30,
+    "allergen": "Gluten",
+    "food_label": "pizza",
+    "description": "Images of pizza and pizza slices",
+    "image_url": "src/assets/cards/pizza.jpg"
+  }
+]
+
