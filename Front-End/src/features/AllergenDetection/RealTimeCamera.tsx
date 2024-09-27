@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   Table,
-  TableCell,
   TableHead,
   TableRow,
   TableBody,
@@ -19,7 +18,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 
 const RealTimeCamera: React.FC = () => {
 
-  const [checked, setChecked] = useState(true);
+  const [checked ] = useState(true);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [prediction, setPrediction] = useState("");
   const [allergen, setAllergen] = useState("");

@@ -43,13 +43,13 @@ function Home() {
             }}
           >
             <Typography
-              variant={isSmallScreen ? "h4" : "h3"}
+              variant={isSmallScreen ? "h5" : "h3"}
               sx={{ zIndex: 2, fontWeight: 600, padding: "5%" }}
             >
               Food Allergen Classification
             </Typography>
             <Typography
-              variant={isSmallScreen ? "h6" : "h5"}
+              variant={isSmallScreen ? "body1" : "h5"}
               sx={{ paddingX: "3%" }}
             >
               Discover our Food Allergen Classification tool—your solution for

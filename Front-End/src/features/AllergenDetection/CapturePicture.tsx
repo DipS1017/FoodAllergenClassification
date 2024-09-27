@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Table,
-  TableCell,
   TableHead,
   TableRow,
   TableBody,
@@ -22,7 +21,7 @@ import { useLocation, Link } from "react-router-dom"; // Import Link for routing
 
 const CapturedPicture: React.FC = () => {
 
-  const [checked, setChecked] = useState(true);
+  const [checked, ] = useState(true);
   
   const location = useLocation();
   const image = location.state?.image as string;

@@ -1,10 +1,10 @@
-import {Grid, Container, Grow, Paper, Typography } from "@mui/material";
+import {Grid,  Grow, Paper,} from "@mui/material";
 import {
   TextTypography,
 } from "../Theme/StyledComponents";
 import { useState } from "react";
 function About() {
-  const [checked, useChecked] = useState(true);
+  const [checked, ] = useState(true);
   return (
 
     <Grid container justifyContent="center">

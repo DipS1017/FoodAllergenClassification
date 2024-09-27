@@ -8,7 +8,6 @@ import Navbar from "./components/Navbar/Navbar";
 import Register from "./components/Auth/Register";
 import Login from "./components/Auth/Login";
 import About from './components/About/About';
-import UserProfile from "./components/Profile/UserProfile";
 import ProtectedRoute from "./components/Routes/ProtectedRoute";
 
 const App: React.FC = () => {
@@ -24,7 +23,6 @@ const App: React.FC = () => {
         
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<UserProfile />} />
           <Route path="/realtime-camera" element={<RealTimeCamera />} />
         </Route>
       </Routes>

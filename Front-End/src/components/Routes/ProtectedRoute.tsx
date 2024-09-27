@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 // A function to check if the user is authenticated
 const isAuthenticated = (): boolean => {

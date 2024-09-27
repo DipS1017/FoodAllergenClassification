@@ -13,12 +13,11 @@ const Login:React.FC = () => {
   const navigate=useNavigate();
  const [email,setEmail] =useState('');
  const [password,setPassword] =useState('');
-  const [checked, setChecked] = useState(true);
+  const [checked ] = useState(true);
   const paperStyle = { padding: 20, height: '60vh', width:isMediumScreen?'70%': '30%', margin: "20px auto" };
   const avatarStyle = { backgroundColor:  '#00712D'};
   const btnstyle = { margin: '8px 0' };
 
- 
 const [error, setError] = useState<string | null>(null);
 
 const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
