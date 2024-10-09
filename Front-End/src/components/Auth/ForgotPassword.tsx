@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Grid, Paper, Avatar, TextField, Button, Typography } from '@mui/material';
+import { Grid,Grow, Paper, Avatar, TextField, Button, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from 'axios';
 
@@ -9,6 +9,7 @@ const ForgotPassword: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState<boolean>(false); // State to track if it's an error
 
+  const [checked] = useState(true);
   const paperStyle = { padding: 20, height: '40vh', width: '30%', margin: '20px auto' };
   const avatarStyle = { backgroundColor: '#00712D' };
   const btnstyle = { margin: '8px 0' };
@@ -28,8 +29,10 @@ const ForgotPassword: React.FC = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container justifyContent="center">
+
+        <Grow in={checked}>
         <Paper elevation={10} style={paperStyle}>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" flexDirection="column"alignItems="center">
             <Avatar style={avatarStyle}><LockOutlinedIcon /></Avatar>
             <Typography variant="h5">Forgot Password</Typography>
           </Grid>
@@ -53,6 +56,7 @@ const ForgotPassword: React.FC = () => {
             Send Reset Link
           </Button>
         </Paper>
+        </Grow>
       </Grid>
     </form>
   );
