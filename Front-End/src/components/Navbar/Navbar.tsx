@@ -6,26 +6,22 @@ import {
   Typography,
   Toolbar,
   styled,
-  Avatar,
   Menu,
   MenuItem,
 } from "@mui/material";
 import {
   Fastfood,
   Home,
-  AccountCircle,
   HowToReg,
   ImageSearch,
   ListAlt,
   Menu as MenuIcon,
-  AccountBoxSharp,
   AccountCircleRounded,
 } from "@mui/icons-material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
 import axios from "axios";
 
-                //<MenuItem onClick={handleProfileClick}>Profile</MenuItem>
 // Styled Toolbar
 const StyleToolbar = styled(Toolbar)({
   display: "flex",
@@ -44,7 +40,7 @@ const StyleLink = styled(RouterLink)({
 });
 
 function Navbar() {
-  const { isSmallScreen, isMediumScreen } = useResponsive();
+  const { isMediumScreen } = useResponsive();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [userData, setUserData] = useState<{ name: string; profileImage: string } | null>(null);
   const open = Boolean(anchorEl);
@@ -56,11 +52,6 @@ function Navbar() {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleProfileClick = () => {
-    handleClose();
-    navigate("/profile");
   };
 
   const handleLogout = async () => {
@@ -122,10 +113,10 @@ function Navbar() {
             </StyleLink>
           </Typography>
 
-            <StyleLink to="/">
-          <Fastfood sx={{ display: { xs: "flex", sm: "none" } }}  />
+          <StyleLink to="/">
+            <Fastfood sx={{ display: { xs: "flex", sm: "none" } }} />
+          </StyleLink>
 
-            </StyleLink>
           {/* The MenuIcon is displayed on medium screens */}
           <MenuIcon sx={{ display: isMediumScreen ? "flex" : "none" }} />
 
@@ -148,28 +139,25 @@ function Navbar() {
               </StyleLink>
             )}
 
-          {token && (
-            <>
-              <AccountCircleRounded
-                onClick={handleClick}
-                
-              >
-
-              </AccountCircleRounded>
-              <Menu
-                id="user-menu"
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'user-avatar',
-                }}
-              >
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
-            </>
-          )}
-
+            {token && (
+              <>
+                <AccountCircleRounded
+                  onClick={handleClick}
+                  sx={{ cursor: "pointer" }}
+                />
+                <Menu
+                  id="user-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'user-avatar',
+                  }}
+                >
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
+              </>
+            )}
           </Typography>
         </StyleToolbar>
       </AppBar>

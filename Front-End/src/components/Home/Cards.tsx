@@ -17,7 +17,7 @@ interface CardItem {
 }
 
 const ActionAreaCard: React.FC = () => {
-  const {isSmallScreen,isMediumScreen}=useResponsive();
+  const {isSmallScreen,}=useResponsive();
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px',alignContent:'center',justifyContent:'center' }}>
       {cardData.map((card: CardItem) => (

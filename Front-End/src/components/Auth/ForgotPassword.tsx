@@ -29,7 +29,7 @@ const ForgotPassword: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <Grid container justifyContent="center">
         <Paper elevation={10} style={paperStyle}>
-          <Grid align="center">
+      <Grid container justifyContent="center">
             <Avatar style={avatarStyle}><LockOutlinedIcon /></Avatar>
             <Typography variant="h5">Forgot Password</Typography>
           </Grid>

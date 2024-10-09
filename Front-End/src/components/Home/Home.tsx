@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import bg from "../../assets/food-allergies-1080x675.svg";
 import {
   Box,
@@ -16,7 +16,7 @@ import Cards from './Cards';
 import { ResponsiveTypography } from "../Theme/StyledComponents";
 function Home() {
   const { isSmallScreen, isMediumScreen } = useResponsive();
-  const [checked, setChecked] = useState(true);
+  const [checked, ] = useState(true);
 
   return (
     <>

@@ -27,6 +27,7 @@ const Login: React.FC = () => {
       localStorage.setItem('authToken', response.data.token); // Store the token in localStorage
       navigate('/');
     } catch (err: any) {
+
       console.error("Login failed", err);
       setError('Login failed. Please check your credentials and try again.');
     }
@@ -37,7 +38,7 @@ const Login: React.FC = () => {
       <Grid container justifyContent="center">
         <Grow in={checked}>
           <Paper elevation={10} style={paperStyle}>
-            <Grid align="center">
+            <Grid container direction="column" alignItems="center">
               <Avatar style={avatarStyle}><LockOutlinedIcon /></Avatar>
               <Typography variant="h5">Sign In</Typography>
             </Grid>
@@ -65,6 +66,9 @@ const Login: React.FC = () => {
                 Forgot password?
               </RouterLink>
             </Typography>
+<Typography style={{ color: 'red',  }}>
+                {error}
+              </Typography>
             <Button type="submit" color="primary" variant="contained" style={btnstyle} fullWidth>
               Sign in
             </Button>

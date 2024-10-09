@@ -15,7 +15,7 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Password is required'), confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .oneOf([Yup.ref('password'), ''], 'Passwords must match')
     .required('Confirm Password is required'),
   gender: Yup.string().required('Gender is required'),
   phoneNumber: Yup.string()
@@ -72,7 +72,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         await validationSchema.validate(values, { abortEarly: false });
 
         // Form is valid; handle form submission here
-        const response = await axios.post('http://localhost:3000/api/auth/register', values);
+         await axios.post('http://localhost:3000/api/auth/register', values);
         console.log('Form submitted:', values);
         navigate('/login');
     } catch (err: any) {
@@ -106,7 +106,7 @@ return (
     <Grid>
       <Grow in={true}>
         <Paper elevation={5} style={paperStyle}>
-          <Grid align='center'>
+      <Grid container justifyContent="center">
             <Avatar style={avatarStyle}>
               <Person />
             </Avatar>
