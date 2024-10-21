@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   AppBar,
@@ -8,6 +7,7 @@ import {
   styled,
   Menu,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 import {
   Fastfood,
@@ -16,7 +16,7 @@ import {
   ImageSearch,
   ListAlt,
   Menu as MenuIcon,
-  AccountCircleRounded,
+  AccountCircle,
 } from "@mui/icons-material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
@@ -42,7 +42,10 @@ const StyleLink = styled(RouterLink)({
 function Navbar() {
   const { isMediumScreen } = useResponsive();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [userData, setUserData] = useState<{ name: string; profileImage: string } | null>(null);
+  const [, setUserData] = useState<{
+    name: string;
+    profileImage: string;
+  } | null>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
 
@@ -57,12 +60,12 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       // Call an API endpoint to invalidate the token
-      await axios.post('/api/logout'); // Ensure you have this route set up
+      await axios.post("/api/logout"); // Ensure you have this route set up
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
     }
 
-    localStorage.removeItem('authToken');
+    localStorage.removeItem("authToken");
     setUserData(null); // Clear user data
     handleClose();
     navigate("/");
@@ -72,26 +75,26 @@ function Navbar() {
   React.useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem("authToken");
         if (token) {
-          const response = await axios.get('/api/user', {
+          const response = await axios.get("/api/user", {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           });
 
           setUserData(response.data);
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        navigate('/login');
+        console.error("Error fetching user data:", error);
+        navigate("/login");
       }
     };
 
     fetchUserData();
   }, [navigate]);
 
-  const token = localStorage.getItem('authToken'); // Check for token
+  const token = localStorage.getItem("authToken"); // Check for token
 
   return (
     <Box>
@@ -141,17 +144,25 @@ function Navbar() {
 
             {token && (
               <>
-                <AccountCircleRounded
-                  onClick={handleClick}
-                  sx={{ cursor: "pointer" }}
-                />
+               
+<IconButton 
+  onClick={handleClick} 
+  sx={{ 
+    color: "white",       // Keep the color white
+    cursor: "pointer",    // Pointer for hover
+    padding: 0,           // Remove extra padding
+  }}
+>
+  <AccountCircle />
+</IconButton>
+
                 <Menu
                   id="user-menu"
                   anchorEl={anchorEl}
                   open={open}
                   onClose={handleClose}
                   MenuListProps={{
-                    'aria-labelledby': 'user-avatar',
+                    "aria-labelledby": "user-avatar",
                   }}
                 >
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
@@ -166,4 +177,3 @@ function Navbar() {
 }
 
 export default Navbar;
-
