@@ -1,11 +1,10 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
-import cardData from './card.json'; // Adjust the path as needed
 import useResponsive from '../../hooks/useResponsive';
 
 
@@ -16,8 +15,24 @@ interface CardItem {
   description: string;
 }
 
+
 const ActionAreaCard: React.FC = () => {
   const {isSmallScreen,}=useResponsive();
+  const [cardData,setCardData]=useState<CardItem[]>([]);
+useEffect(()=>{
+  const fetchData=async()=>{
+    try{
+      const respone=await fetch('/card.json');
+      const data=await respone.json();
+      setCardData(data);
+
+    }catch{
+      console.log('error');
+    }
+  };
+  fetchData();
+},[]);
+
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px',alignContent:'center',justifyContent:'center' }}>
       {cardData.map((card: CardItem) => (
