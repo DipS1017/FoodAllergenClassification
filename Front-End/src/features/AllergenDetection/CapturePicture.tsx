@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   Button,
@@ -20,9 +21,7 @@ import {
 import { useLocation, Link } from "react-router-dom"; // Import Link for routing
 
 const CapturedPicture: React.FC = () => {
-
-  const [checked, ] = useState(true);
-  
+  const [checked] = useState(true);
   const location = useLocation();
   const image = location.state?.image as string;
 
@@ -59,18 +58,26 @@ const CapturedPicture: React.FC = () => {
 
   const handleImageUpload = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files && event.target.files[0]) {
-        processImage(event.target.files[0]);
+      const file = event.target.files?.[0];
+      if (file) {
+        if (isValidImage(file)) {
+          processImage(file);
+        } else {
+          alert("Please upload a valid JPG or JPEG image.");
+        }
       }
     },
-    [],
+    []
   );
 
   const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
-      processImage(event.dataTransfer.files[0]);
+    const file = event.dataTransfer.files?.[0];
+    if (file && isValidImage(file)) {
+      processImage(file);
+    } else {
+      alert("Please upload a valid JPG or JPEG image.");
     }
   }, []);
 
@@ -79,8 +86,13 @@ const CapturedPicture: React.FC = () => {
       event.preventDefault();
       event.stopPropagation();
     },
-    [],
+    []
   );
+
+  const isValidImage = (file: File): boolean => {
+    const validImageTypes = ["image/jpeg", "image/jpg"];
+    return validImageTypes.includes(file.type);
+  };
 
   const processImage = (file: File) => {
     const reader = new FileReader();
@@ -107,123 +119,109 @@ const CapturedPicture: React.FC = () => {
   };
 
   return (
-
-      <Grow in={checked}>
-    <Box sx={{ padding: 4 }}>
-      <ResponsiveTypography
-        variant="h4"
-        gutterBottom
-        sx={{ textAlign: "center", color: "#454B1B" }}
-      >
-        Captured Image Analysis
+    <Grow in={checked}>
+      <Box sx={{ padding: 4 }}>
+        <ResponsiveTypography
+          variant="h4"
+          gutterBottom
+          sx={{ textAlign: "center", color: "#454B1B" }}
+        >
+          Captured Image Analysis
         </ResponsiveTypography>
-      <Grid container spacing={4} justifyContent="center" alignItems="center">
-        <Grid item xs={12} sm={10} md={6}>
-          <Box sx={{ textAlign: "center" }}>
-            <Input
-              type="file"
-              inputRef={fileInputRef}
-              onChange={handleImageUpload}
-              sx={{ display: "none" }}
-            />
-            <ButtonGroup variant="contained" aria-label="Basic button group">
-              {" "}
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                color="primary"
-              >
-                Upload Image
-              </Button>
-
-              <Link to="/realtime-camera" style={{ textDecoration: "none" }} >
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{ marginLeft: 2 }}
-                >
-                  Use Real-Time Camera
+        <Grid container spacing={4} justifyContent="center" alignItems="center">
+          <Grid item xs={12} sm={10} md={6}>
+            <Box sx={{ textAlign: "center" }}>
+              <Input
+                type="file"
+                inputRef={fileInputRef}
+                onChange={handleImageUpload}
+                sx={{ display: "none" }}
+                accept="image/jpeg, image/jpg" // Accept only JPG/JPEG files
+              />
+              <ButtonGroup variant="contained" aria-label="Basic button group">
+                <Button onClick={() => fileInputRef.current?.click()} color="primary">
+                  Upload Image
                 </Button>
-              </Link>
-            </ButtonGroup>
-            <Box
-              ref={dropZoneRef}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              sx={{
-                border: "2px dashed #cccccc",
-                borderRadius: 2,
-                padding: 2,
-                marginY: 2,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "200px",
-                backgroundColor: "#f9f9f9",
-                textAlign: "center",
-              }}
-            >
-              {!imageSrc ? (
-                <Typography variant="h6" color="textSecondary">
-                  Drag an image here or click the button to upload
-                </Typography>
-              ) : (
-                <img
-                  src={imageSrc}
-                  alt="Captured"
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "400px",
-                    objectFit: "cover",
-                  }}
-                />
+                <Link to="/realtime-camera" style={{ textDecoration: "none" }}>
+                  <Button variant="contained" color="secondary" sx={{ marginLeft: 2 }}>
+                    Use Real-Time Camera
+                  </Button>
+                </Link>
+              </ButtonGroup>
+              <Box
+                ref={dropZoneRef}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                sx={{
+                  border: "2px dashed #cccccc",
+                  borderRadius: 2,
+                  padding: 2,
+                  marginY: 2,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "200px",
+                  backgroundColor: "#f9f9f9",
+                  textAlign: "center",
+                }}
+              >
+                {!imageSrc ? (
+                  <Typography variant="h6" color="textSecondary">
+                    Drag an image here or click the button to upload
+                  </Typography>
+                ) : (
+                  <img
+                    src={imageSrc}
+                    alt="Captured"
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "400px",
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
+              </Box>
+              {imageSrc && (
+                <>
+                  <ResponsiveTypography sx={{ marginTop: 2 }}>
+                    Prediction: {prediction}
+                  </ResponsiveTypography>
+                  <ResponsiveTypography>Allergen: {allergen}</ResponsiveTypography>
+                  <ResponsiveTypography>Description: {description}</ResponsiveTypography>
+                </>
               )}
             </Box>
-            {imageSrc && (
-              <>
-                <ResponsiveTypography sx={{ marginTop: 2 }}>
-                  Prediction: {prediction}
-                </ResponsiveTypography>
-                <ResponsiveTypography>
-                  Allergen: {allergen}
-                </ResponsiveTypography>
-                <ResponsiveTypography>
-                  Description: {description}
-                </ResponsiveTypography>
-              </>
-            )}
-          </Box>
-        </Grid>
-        {imageSrc && (
-          <Grid item xs={12} sm={12} md={6}>
-            <ResponsiveTypography>Confidence Levels:</ResponsiveTypography>
-            <TableContainer sx={{ maxHeight: 700 }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell>#</StyledTableCell>
-                    <StyledTableCell>Class</StyledTableCell>
-                    <StyledTableCell>Confidence</StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {confidence.map(([label, confidenceValue], index) => (
-                    <TableRow key={index}>
-                      <StyledTableCell>{index + 1}</StyledTableCell>
-                      <StyledTableCell>{label}</StyledTableCell>
-                      <StyledTableCell>{confidenceValue}</StyledTableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
           </Grid>
-        )}
-      </Grid>
-
-    </Box>
-
-      </Grow>
+          {imageSrc && (
+            <Grid item xs={12} sm={12} md={6}>
+              <ResponsiveTypography>Confidence Levels:</ResponsiveTypography>
+              <TableContainer sx={{ maxHeight: 700 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <StyledTableCell>#</StyledTableCell>
+                      <StyledTableCell>Class</StyledTableCell>
+                      <StyledTableCell>Confidence</StyledTableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {confidence.map(([label, confidenceValue], index) => (
+                      <TableRow key={index}>
+                        <StyledTableCell>{index + 1}</StyledTableCell>
+                        <StyledTableCell>{label}</StyledTableCell>
+                        <StyledTableCell>{confidenceValue}</StyledTableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+          )}
+        </Grid>
+      </Box>
+    </Grow>
   );
 };
 
 export default CapturedPicture;
+

@@ -2,17 +2,17 @@
 import React, { useState } from 'react';
 import { Grid, Paper, Avatar, TextField, Button, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ResetPassword: React.FC = () => {
   const { token } = useParams<{ token: string }>(); // Get the reset token from the URL
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState<string | null>(null);
 
-  const paperStyle = { padding: 20, height: '50vh', width: '30%', margin: '20px auto' };
+  const paperStyle = { padding: 20, height: '50vh', width: '100%', maxWidth: 400, margin: '20px auto' };
   const avatarStyle = { backgroundColor: '#00712D' };
   const btnstyle = { margin: '8px 0' };
 
@@ -28,7 +28,7 @@ const ResetPassword: React.FC = () => {
     try {
       await axios.post(`http://localhost:3000/api/auth/reset-password/${token}`, { password });
       setMessage('Password reset successfully');
-        navigate('/login')
+      navigate('/login');
     } catch (err) {
       setMessage('Error resetting password. Please try again.');
     }
@@ -38,9 +38,9 @@ const ResetPassword: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <Grid container justifyContent="center">
         <Paper elevation={10} style={paperStyle}>
-          <Grid container justifyContent="center">
+          <Grid container justifyContent="center" flexDirection="column" alignItems="center">
             <Avatar style={avatarStyle}><LockOutlinedIcon /></Avatar>
-            <Typography variant="h5">Reset Password</Typography>
+            <Typography variant="h5" align="center">Reset Password</Typography>
           </Grid>
           <TextField
             label="New Password"
@@ -62,7 +62,7 @@ const ResetPassword: React.FC = () => {
             required
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          {message && <Typography style={{ margin: '10px 0', color: 'red' }}>{message}</Typography>}
+          {message && <Typography style={{ margin: '10px 0', color: 'red', textAlign: 'center' }}>{message}</Typography>}
           <Button type="submit" color="primary" variant="contained" style={btnstyle} fullWidth>
             Reset Password
           </Button>

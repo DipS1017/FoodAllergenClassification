@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import bg from "../../assets/food-allergies-1080x675.svg";
 import {
   Box,
@@ -14,9 +15,26 @@ import { Link } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
 import Cards from './Cards';
 import { ResponsiveTypography } from "../Theme/StyledComponents";
+
+// Function to check authentication status
+const isAuthenticated = (): boolean => {
+  const token = localStorage.getItem('authToken');
+  console.log('Retrieved token', token);
+  console.log('Is token valid:', !!token);
+  return !!token; // Return true if token exists, otherwise false
+};
+
 function Home() {
   const { isSmallScreen, isMediumScreen } = useResponsive();
-  const [checked, ] = useState(true);
+  const [checked] = useState(true);
+
+  // Check if the user is authenticated
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const loggedIn = isAuthenticated(); // Check if the user is authenticated
+    setIsLoggedIn(loggedIn);
+  }, []);
 
   return (
     <>
@@ -85,12 +103,15 @@ function Home() {
             >
               Not logged in? Log in to use the real-time camera feature.
             </Typography>
-            <Link to="/login">
-            <Button variant="contained" color="success">
 
-              <Login></Login>Log In
-            </Button>
-</Link>
+            {/* Conditionally render the Log In button based on login status */}
+            {!isLoggedIn && (
+              <Link to="/login">
+                <Button variant="contained" color="success">
+                  <Login /> Log In
+                </Button>
+              </Link>
+            )}
           </Container>
         </Grow>
         
@@ -103,25 +124,19 @@ function Home() {
               flex: "50%",
               position: isMediumScreen ? "absolute" : "flex",
               width: isMediumScreen ? "100%" : "40%",
-
               height: "80svh", // Adjust the height as needed
             }}
           />
-
         </Grow>
       </Box>
-        <Box sx={{
-          paddingX:'5%',paddingY:'1%'
-        }}>
-        <Paper sx={{padding:'8%',textAlign:'center'}}><ResponsiveTypography>Classification Groups</ResponsiveTypography>
 
-      <Cards/>
-          </Paper>
-
-        
-        </Box>
-
-          </>
+      <Box sx={{ paddingX: '5%', paddingY: '1%' }}>
+        <Paper sx={{ padding: '8%', textAlign: 'center' }}>
+          <ResponsiveTypography>Classification Groups</ResponsiveTypography>
+          <Cards />
+        </Paper>
+      </Box>
+    </>
   );
 }
 
