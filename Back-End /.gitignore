@@ -2,6 +2,8 @@
 *.keras
 
 flask-microservice/venv/
+flask-microservice/.venv/
+flask-microservice/final_model_after_additional_training.keras
 
 *.env
 
